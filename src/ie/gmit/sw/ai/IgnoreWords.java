@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class IgnoreWords {
-	public static Collection<?> ignoreWords() throws IOException {
+	public static Collection<String> ignoreWords() throws IOException {
 		Collection<String> ignoreWords = new ArrayList<String>();
 
 		try {
