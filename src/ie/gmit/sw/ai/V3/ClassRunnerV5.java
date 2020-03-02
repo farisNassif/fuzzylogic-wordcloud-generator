@@ -3,10 +3,8 @@ package ie.gmit.sw.ai.V3;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
