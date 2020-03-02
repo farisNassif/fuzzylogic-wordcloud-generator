@@ -9,7 +9,6 @@ public class WeightedFont {
 	public WordFrequency[] getFontSizes(WordFrequency[] words) {
 		//Get the max and min frequencies and scale these to a natural log scale to smooth out the range  
 		double max = Math.log(Arrays.stream(words).mapToDouble(n -> n.getFrequency()).max().getAsDouble());
-		System.out.println(Math.log(Arrays.stream(words).mapToDouble(n -> n.getFrequency()).max().getAsDouble()));
 		double min = Math.log(Arrays.stream(words).mapToDouble(n -> n.getFrequency()).min().getAsDouble());
 
 		for (WordFrequency wf : words) {
