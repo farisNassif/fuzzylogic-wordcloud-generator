@@ -24,16 +24,16 @@ public class ClassRunnerV5 implements Runnable {
 	// .reversed() makes life a lot easier when polling the queue, actually polls
 	// highest valued first
 	private Queue<UrlNode> queue = new PriorityQueue<>(Comparator.comparing(UrlNode::getScore).reversed());
+	public static String query_text = "software";
 
 	@Override
 	public void run() {
 		String initial_url = "https://duckduckgo.com/html/?q=";
-		String query = "software";
 		int counter = 0;
 		Document doc = null;
 
 		try {
-			doc = Jsoup.connect(initial_url + query).get();
+			doc = Jsoup.connect(initial_url + query_text).get();
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -41,9 +41,30 @@ public class ClassRunnerV5 implements Runnable {
 
 		closed_list.add(initial_url);
 		System.out.println("ClosedSize: " + closed_list.size() + " " + initial_url + "\n");
-		// Google results for query
-		Elements edges = doc.select("a[href]");
+		
+		try {
+			genEdges(doc);
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
 
+		while (!queue.isEmpty()) {
+			System.out.println(queue.peek().getUrl() + " " + queue.peek().getScore());
+			try {
+				generateChildren(queue.poll().getUrl());
+			} catch (Throwable e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public void scoreUrl() throws Throwable {
+
+	}
+
+	public void genEdges(Document doc) throws Throwable {
+		Elements edges = doc.select("a[href]");
+		int counter = 0;
 		for (Element e : edges) {
 			String link = e.absUrl("href");
 			if (link != null && !closed_list.contains(link) && counter < BRANCHING_FACTOR && !link.contains("duck")) {
@@ -53,30 +74,13 @@ public class ClassRunnerV5 implements Runnable {
 				counter++;
 			}
 		}
-
-		while (!queue.isEmpty()) {
-			// System.out.println(queue.poll().getUrl() + " " + queue.poll().getScore());
-			System.out.println(queue.peek().getUrl() + " " + queue.peek().getScore());
-			queue.poll();
-		}
-
-		// Elements res =
-		// doc.getElementById("links").getElementsByClass("results_links");
-
-		// for (Element r : res) {
-		// Element title =
-		// r.getElementsByClass("links_main").first().getElementsByTag("a").first();
-		// // System.out.println(title.attr("href"));
-		// // urls.add();
-		// }
-
 	}
 
-	public void scoreUrl() throws Throwable {
+	// Generate next gen children based on highest heuristically scoring child
+	public void generateChildren(String child_to_expand) throws Throwable {
+		System.out.println("POLLED " + child_to_expand);
+		Document doc = Jsoup.connect(child_to_expand).get();
 
-	}
-
-	public void processChildren() throws Throwable {
-
+		genEdges(doc);
 	}
 }
