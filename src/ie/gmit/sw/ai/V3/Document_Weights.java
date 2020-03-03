@@ -1,21 +1,27 @@
 package ie.gmit.sw.ai.V3;
 
+import java.util.Arrays;
 import java.util.EnumMap;
 
 public class Document_Weights {
 	public enum Weight_Names {
-		TITLE_WEIGHT, H1_WEIGHT, H2_WEIGHT, H3_WEIGHT, PARAGRAPH_WEIGHT, METADATA_WEIGHT
+		meta, title, h1, h2, h3, body
+	}
+
+	public static String[] Weight_Name_Array() {
+		String valuesStr = Arrays.toString(Document_Weights.Weight_Names.values());
+		return valuesStr.substring(1, valuesStr.length() - 1).replace(" ", "").split(",");
 	}
 
 	// Maps integer values to their corresponding String values
 	public static EnumMap<Weight_Names, Integer> Weight_Value_Mapping() {
 		EnumMap<Weight_Names, Integer> weight_value_map = new EnumMap<Weight_Names, Integer>(Weight_Names.class);
-		weight_value_map.put(Weight_Names.METADATA_WEIGHT, 6);
-		weight_value_map.put(Weight_Names.TITLE_WEIGHT, 20);
-		weight_value_map.put(Weight_Names.H1_WEIGHT, 16);
-		weight_value_map.put(Weight_Names.H2_WEIGHT, 13);
-		weight_value_map.put(Weight_Names.H3_WEIGHT, 10);
-		weight_value_map.put(Weight_Names.PARAGRAPH_WEIGHT, 6);
+		weight_value_map.put(Weight_Names.meta, 20);
+		weight_value_map.put(Weight_Names.title, 12);
+		weight_value_map.put(Weight_Names.h1, 9);
+		weight_value_map.put(Weight_Names.h2, 7);
+		weight_value_map.put(Weight_Names.h3, 5);
+		weight_value_map.put(Weight_Names.body, 3);
 		return weight_value_map;
 	}
 }

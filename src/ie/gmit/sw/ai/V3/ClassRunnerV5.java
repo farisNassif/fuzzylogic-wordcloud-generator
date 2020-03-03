@@ -22,7 +22,7 @@ public class ClassRunnerV5 implements Runnable {
 	// .reversed() makes life a lot easier when polling the queue, actually polls
 	// highest valued first
 	private Queue<UrlNode> queue = new PriorityQueue<>(Comparator.comparing(UrlNode::getScore).reversed());
-	public static String query_text = "cum";
+	public static String query_text = "add";
 
 	@Override
 	public void run() {
@@ -162,7 +162,6 @@ public class ClassRunnerV5 implements Runnable {
 		} catch (Exception e) {
 			System.out.println(e);
 		}
-
 		return baseUrl;
 	}
 }
