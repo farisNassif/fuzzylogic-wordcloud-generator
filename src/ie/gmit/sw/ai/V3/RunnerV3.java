@@ -13,7 +13,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import ie.gmit.sw.ai.V3.Document_Weights.Weight_Names;
+import ie.gmit.sw.ai.V4.Document_Weights;
+import ie.gmit.sw.ai.V4.Document_Weights.Weight_Names;
 
 public class RunnerV3 {
 	static String initialUrl = "https://duckduckgo.com/html/?q=";

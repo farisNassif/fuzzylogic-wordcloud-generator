@@ -12,6 +12,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import ie.gmit.sw.ai.V4.Document_Weights;
+
 public class RunnerV4 {
 	private static Set<String> closed_list = new ConcurrentSkipListSet<>();
 	private static Document_Weights weight_mapping = new Document_Weights();

@@ -14,6 +14,10 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import ie.gmit.sw.ai.V4.Document_Weights;
+import ie.gmit.sw.ai.V4.IgnoreWords;
+import ie.gmit.sw.ai.V4.UrlNode;
+
 public class ClassRunnerV5 implements Runnable {
 	private final static int BRANCHING_FACTOR = 5;
 	private final static int MAX_URLS_TO_VISIT = 20;
