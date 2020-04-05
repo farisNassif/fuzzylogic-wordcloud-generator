@@ -22,11 +22,16 @@ public class WordCloudProcessor implements Runnable {
 	@Override
 	public void run() {
 		System.out.println("Processing wordcloud ...");
-		/* Probably bad practice but I hate try/catch statements taking up too many lines */
-		try { InitializeSearch(); } catch (IOException e) { e.printStackTrace(); }
+		try {
+			/* Start processing */
+			InitializeSearch();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		System.out.println("Finished");
 	}
 
+	/* Kicks off the search */
 	public void InitializeSearch() throws IOException {
 		String initial_url = "https://duckduckgo.com/html/?q=";
 
@@ -37,18 +42,23 @@ public class WordCloudProcessor implements Runnable {
 		/* Get the resulting links of the initial URL and query text */
 		Elements elements = doc.select("a");
 
-		/* */
+		/* Generate child URL nodes based on initial query */
 		GenerateChildNodes(elements);
 	}
 
+	/* Gen nodes based on initial search, discards pointless URLs / visited URLs */
 	public void GenerateChildNodes(Elements elements) {
+		/* Variable to just control branching factor */
+		int birthControl = 1;
 		for (Element e : elements) {
+			/* Get absolute URL and clean any HTML syntax off it */
 			String link = e.attr("href");
-			
-			/* If statement making sure to only check links that are worthy and not pointless */
-			if (!closed_list.contains(link) && link.contains("https://"))
-			{
-				/* Link was just visited, add it to closed list to make sure don't visit it again */
+
+			/* Making sure to only check links that are worthy and not pointless */
+			if (!closed_list.contains(link) && link.contains("https://") && birthControl <= wordcloud.brachingFactor) {
+				/* Once this statement executes n times, stop */
+				birthControl++;
+				/* Was just visited, add to closed list to make sure don't visit it again */
 				closed_list.add(link);
 				System.out.println(link);
 			}
