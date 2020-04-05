@@ -1,4 +1,4 @@
-package ie.gmit.sw.ai.V5;
+package ie.gmit.sw.ai.encogLabs;
 
 import org.encog.engine.network.activation.ActivationSigmoid;
 import org.encog.ml.data.MLData;

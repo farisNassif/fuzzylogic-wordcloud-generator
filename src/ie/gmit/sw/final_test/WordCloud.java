@@ -1,4 +1,4 @@
-package ie.gmit.sw.ai.V5;
+package ie.gmit.sw.final_test;
 
 /* Generic word cloud object defining key values */
 public class WordCloud {
