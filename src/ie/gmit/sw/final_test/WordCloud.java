@@ -1,12 +1,12 @@
 package ie.gmit.sw.final_test;
 
 /* Generic word cloud object defining key values */
-public class WordCloud {
+public class Wordcloud {
 	String word;
 	int brachingFactor;
 	int maxDepth;
 	
-	public WordCloud(String word, int brachingFactor, int maxDepth) {
+	public Wordcloud(String word, int brachingFactor, int maxDepth) {
 		super();
 		this.word = word;
 		this.brachingFactor = brachingFactor;
