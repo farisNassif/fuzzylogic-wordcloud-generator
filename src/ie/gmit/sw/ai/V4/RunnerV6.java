@@ -18,8 +18,6 @@ import ie.gmit.sw.ai.WeightedFont;
 import ie.gmit.sw.ai.WordFrequency;
 import ie.gmit.sw.ai.V4.Document_Weights.Weight_Names;
 
-
-
 public class RunnerV6 {
 	public static Set<String> closed_list = new ConcurrentSkipListSet<>();
 	// .reversed() makes life a lot easier when polling the queue, actually polls
@@ -27,10 +25,11 @@ public class RunnerV6 {
 	public static Queue<UrlNode> queue = new PriorityQueue<>(Comparator.comparing(UrlNode::getScore).reversed());
 	public static Collection<Weight_Names> weight_keyset = Document_Weights.Weight_Value_Mapping().keySet();
 	public static Map<String, Integer> word_freq = new ConcurrentHashMap<String, Integer>();
+	
 	public static boolean EMERGENCY_STOP = false;
-	final static int BRANCHING_FACTOR = 10;
-	final static int MAX_URLS_TO_VISIT = 50;
-	public static String query = "software";
+	final static int BRANCHING_FACTOR = 2;
+	final static int MAX_URLS_TO_VISIT = 10;
+	public static String query = "computer";
 	public static int i = 0;
 	public static int counter = 0;
 	public static int heuristicScore = 0;

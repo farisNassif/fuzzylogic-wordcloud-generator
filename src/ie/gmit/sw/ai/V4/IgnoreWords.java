@@ -6,10 +6,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class IgnoreWords {
 	public static Collection<String> ignoreWords() throws IOException {
-		Collection<String> ignoreWords = new ArrayList<String>();
+		Set<String> ignoreWords = new HashSet<String>();
 
 		try {
 			BufferedReader in = new BufferedReader(new FileReader("ignorewords.txt"));
