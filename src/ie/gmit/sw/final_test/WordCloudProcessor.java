@@ -2,34 +2,33 @@ package ie.gmit.sw.final_test;
 
 import java.io.IOException;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import ie.gmit.sw.ai.V4.Document_Weights;
-import ie.gmit.sw.ai.V4.UrlNode;
+import ie.gmit.sw.final_test.utilities.MapSort;
 
 /* Handles the internal processing of the wordcloud */
 public class WordCloudProcessor implements Runnable {
 	/* Wordcloud object containing query word, branching factor and max depth */
-	private Wordcloud wordcloud;
+	public static Wordcloud wordcloud;
 	/* Contains URL's that were already visited */
 	private static Set<String> closed_list = new ConcurrentSkipListSet<>();
 	/* Maps a word to it's frequency */
 	public static Map<String, Integer> word_freq = new ConcurrentHashMap<String, Integer>();
+	/* Maps words preceeding and proceeding the query word to frequency */
+	public static Map<String, Integer> associated_word_freq = new ConcurrentHashMap<String, Integer>();
 	/* Holds all scored URL's */
 	public static Queue<UrlNode> queue = new PriorityQueue<>(Comparator.comparing(UrlNode::getScore).reversed());
-	
+
 	public WordCloudProcessor(Wordcloud wordcloud) {
 		super();
 		this.wordcloud = wordcloud;
@@ -45,10 +44,14 @@ public class WordCloudProcessor implements Runnable {
 			e.printStackTrace();
 		}
 		System.out.println("Finished");
+		/* Sort the map values => highest to lowest */
+		associated_word_freq = MapSort.crunchifySortMap(associated_word_freq);
+
+		System.out.println(associated_word_freq.entrySet());
 	}
 
 	/* Kicks off the search */
-	public void InitializeSearch() throws IOException {
+	private void InitializeSearch() throws IOException {
 		String initial_url = "https://duckduckgo.com/html/?q=";
 
 		/* Kick off URL search and add initial URL to the closed list */
@@ -63,7 +66,7 @@ public class WordCloudProcessor implements Runnable {
 	}
 
 	/* Gen nodes based on initial search, discards pointless URLs or visited URLs */
-	public void GenerateChildNodes(Elements elements) throws IOException {
+	private void GenerateChildNodes(Elements elements) throws IOException {
 		/* Variable to just control branching factor */
 		int birthControl = 1;
 		for (Element e : elements) {
@@ -74,27 +77,16 @@ public class WordCloudProcessor implements Runnable {
 			if (!closed_list.contains(link) && link.contains("https://") && birthControl <= wordcloud.brachingFactor) {
 				/* Once this statement executes n times, stop */
 				birthControl++;
+
 				/* Was just visited, add to closed list to make sure don't visit it again */
 				closed_list.add(link);
-				System.out.println(link);
 
 				/* Pass the URL to be scored */
-				ScoreChildren(link);
+				Score.ScoreChildren(link, queue);
 			}
 		}
 	}
 
-	/* Takes a child URL and will score it based on relevance */
-	public void ScoreChildren(String child) throws IOException {
-		// meta, title, h1, h2, h3, body
-		Document doc = Jsoup.connect(child).get();
-		String textToExtract = doc.select("body").text().replaceAll("[^a-zA-Z]+", " ");
-		String[] tag_data = textToExtract.split(" ");
-		
-		for (String d : tag_data) {
-			if(d.length() > 2 ) {
-				System.out.println(d.toLowerCase());
-			}
-		}
-	}
+	// if(d.length() > 2 && !IgnoreWords.ignoreWords().contains(d))
+
 }

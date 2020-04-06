@@ -1,18 +1,16 @@
-package ie.gmit.sw.final_test;
+package ie.gmit.sw.final_test.utilities;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 public class IgnoreWords {
 	public static Collection<String> ignoreWords() throws IOException {
-		Set<String> ignoreWords = new HashSet<String>();
-
+		Set<String> ignoreWords = new ConcurrentSkipListSet<String>();
 		try {
 			BufferedReader in = new BufferedReader(new FileReader("ignorewords.txt"));
 
