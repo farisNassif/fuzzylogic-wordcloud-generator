@@ -9,42 +9,13 @@ import org.jsoup.nodes.Document;
 
 /* Initially had the contents of this class in WordCloudProcessor, stuck them in here to clean it up a bit */
 public class Score {
-
-	/* Takes a child URL and will score it based on relevance */
-	public static void ScoreChildren(String child, Queue<UrlNode> queue) throws IOException {
-		int tempHeuristic = 0;
-		int i = 0;
-
-		/* Connec to child URL */
-		Document doc = Jsoup.connect(child).get();
-
-		/* Get the body text of the URL without numbers and symbols */
-		String textToExtract = doc.select("body").text().replaceAll("[^a-zA-Z]+", " ");
-
-		/* Split the contents of the extracted text with a space and put into array */
-		String[] tag_data = textToExtract.split(" ");
-
-		/* For each word in the array .. */
-		for (String word : tag_data) {
-			i++;
-			/* If the queried word is found .. */
-			if (word.toLowerCase().contains(WordCloudProcessor.wordcloud.word.toLowerCase())) {
-				/* Add adjacent words with their adjacency frequency */
-				scoreAdjacentWords(tag_data, word, i);
-				/* Heuristic score for this URL should increase */
-				tempHeuristic++;
-			}
-		}
-		System.out.println(child + ": Heuristic Score => " + tempHeuristic);
-		/* Map this URL and it's heuristic score */
-		queue.offer(new UrlNode(child, tempHeuristic));
-	}
-
 	/*
 	 * Very convuluted and overcomplicated abomination of a method, basically it
 	 * gets the adjacent words to the query word instances within the text and
 	 * shoves them into a map, mapping them with frequencies. It works I promise.
-	 * Might come back and tidy it up at a later point
+	 * Might come back and tidy it up at a later point.
+	 * 
+	 * OUT OF ACTION FOR NOW
 	 */
 	public static void scoreAdjacentWords(String[] tag_data, String word, int i) {
 		/* Words that come before and after the query word */

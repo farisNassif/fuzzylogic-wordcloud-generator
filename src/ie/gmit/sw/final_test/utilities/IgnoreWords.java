@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
+/* Gets ignore words */
 public class IgnoreWords {
 	public static Collection<String> ignoreWords() throws IOException {
 		Set<String> ignoreWords = new ConcurrentSkipListSet<String>();
