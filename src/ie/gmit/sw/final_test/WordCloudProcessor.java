@@ -22,6 +22,8 @@ public class WordCloudProcessor implements Runnable {
 	private Set<String> closed_list = new ConcurrentSkipListSet<>();
 	/* Maps a word to it's frequency */
 	private Map<String, Integer> word_freq = new ConcurrentHashMap<String, Integer>();
+	/* Maps a node to it's depth in the tree */
+	private Map<String, Integer> node_tree = new ConcurrentHashMap<String, Integer>();
 	/* Maps words preceeding and proceeding the query word to frequency */
 	private Map<String, Integer> associated_word_freq = new ConcurrentHashMap<String, Integer>();
 	/* Holds all scored URL's */
@@ -49,6 +51,9 @@ public class WordCloudProcessor implements Runnable {
 		try {
 			/* Kick off initial search for query word */
 			doc = Jsoup.connect(initial_url + wordcloud.word).get();
+			/* Initial node in the tree, stick it in the node_tree map */
+			node_tree.put(initial_url + wordcloud.word, 0);
+			/* Was visited, add to closed list */
 			closed_list.add(initial_url);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -62,23 +67,23 @@ public class WordCloudProcessor implements Runnable {
 	}
 
 	/* Gen nodes based on initial search, discards pointless URLs or visited URLs */
-	private void GenerateChildNodes(Elements elements) {
+	private void GenerateChildNodes(Elements children) {
 		/* Variable to just control branching factor */
 		int birthControl = 1;
 		
 		/* For each child url .. */
-		for (Element e : elements) {
+		for (Element child : children) {
 			/* Get absolute URL and clean any HTML syntax off it */
-			String link = e.attr("href");
-
+			String link = child.attr("href");
+			
 			/* Making sure to only check links that are worthy and not pointless */
 			if (!closed_list.contains(link) && link.contains("https://") && birthControl <= wordcloud.brachingFactor) {
 				/* Counter to control branching factor */
 				birthControl++;
-
+				System.out.println(child.parent().baseUri());
 				/* Was just visited, add to closed list to make sure don't visit it again */
 				closed_list.add(link);
-
+				
 				/* Pass the URL to be scored */
 				try {
 					ScoreChildren(link);
@@ -90,8 +95,8 @@ public class WordCloudProcessor implements Runnable {
 
 		/* If conditions haven't been met to stop recursive calls .. */
 		if (RECURSIVELY_CALL) {
-			// System.out.println("HIGHEST SCORING URL => " + queue.peek().getUrl());
-			// System.out.println("Generating new URLS From highest scoring URL");
+			System.out.println("HIGHEST SCORING URL => " + queue.peek().getUrl());
+			System.out.println("Generating new URLS From highest scoring URL");
 
 			Document doc = null;
 			/* Start focusing on URL's on the highest scoring page */
@@ -115,8 +120,6 @@ public class WordCloudProcessor implements Runnable {
 
 	/* Takes a child URL and will score it based on relevance */
 	private void ScoreChildren(String child) throws IOException {
-		int tempHeuristic = 0;
-
 		/* Connec to child URL */
 		Document doc = Jsoup.connect(child).get();
 
@@ -129,13 +132,8 @@ public class WordCloudProcessor implements Runnable {
 		/* Get Paragraph data without numbers and symbols */
 		String paragraph = doc.select("p").text().replaceAll("[^a-zA-Z]+", " ").toLowerCase();
 
-		/* Go check how relevant this url is to the query word */
-		RelevanceCalculator.UrlRelevance(child, title, headings, paragraph, wordcloud.word.toLowerCase());
-
-		/* Split the contents of the extracted text with a space and put into array */
-
-		System.out.println(child + ": Heuristic Score => " + tempHeuristic);
+		// System.out.println(child + ": Heuristic Score => " + RelevanceCalculator.UrlRelevance(child, title, headings, paragraph, wordcloud.word.toLowerCase()));
 		/* Map this URL and it's heuristic score, shove it onto priority queue */
-		queue.offer(new UrlNode(child, tempHeuristic));
+		queue.offer(new UrlNode(child, RelevanceCalculator.UrlRelevance(child, title, headings, paragraph, wordcloud.word.toLowerCase())));
 	}
 }

@@ -4,12 +4,12 @@ package ie.gmit.sw.final_test;
  * Could have even had this as a map */
 public final class UrlNode {
 	private String url;
-	private int score;
+	private double score;
 
-	public UrlNode(String url, int score) {
+	public UrlNode(String url, double d) {
 		super();
 		this.url = url;
-		this.score = score;
+		this.score = d;
 	}
 
 	public String getUrl() {
@@ -20,7 +20,7 @@ public final class UrlNode {
 		this.url = url;
 	}
 
-	public int getScore() {
+	public double getScore() {
 		return score;
 	}
 
