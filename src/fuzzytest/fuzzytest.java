@@ -13,13 +13,13 @@ public class fuzzytest {
 		double barelyRelevant = 213;
 
 		FIS fis = FIS.load("./res/tipper.fcl", true);
-		FunctionBlock fb = fis.getFunctionBlock("tipper");
+		FunctionBlock fb = fis.getFunctionBlock("urlrelevance");
 
         JFuzzyChart.get().chart(fb);
 
         // Set inputs
-        fis.setVariable("title", 10);
-        fis.setVariable("heading", 10);
+        fis.setVariable("title",10);
+        fis.setVariable("heading", 9);
         
 		fis.evaluate();
         // Show output variable's chart

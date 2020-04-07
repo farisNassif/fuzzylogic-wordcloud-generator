@@ -44,15 +44,15 @@ public class WordCloudProcessor implements Runnable {
 	/* Kicks off the search */
 	private void InitializeSearch() {
 		String initial_url = "https://duckduckgo.com/html/?q=";
-
-		/* Kick off URL search and add initial URL to the closed list */
 		Document doc = null;
+
 		try {
+			/* Kick off initial search for query word */
 			doc = Jsoup.connect(initial_url + wordcloud.word).get();
+			closed_list.add(initial_url);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		closed_list.add(initial_url);
 
 		/* Get the resulting links of the initial URL and query text */
 		Elements elements = doc.select("a");
@@ -65,13 +65,15 @@ public class WordCloudProcessor implements Runnable {
 	private void GenerateChildNodes(Elements elements) {
 		/* Variable to just control branching factor */
 		int birthControl = 1;
+		
+		/* For each child url .. */
 		for (Element e : elements) {
 			/* Get absolute URL and clean any HTML syntax off it */
 			String link = e.attr("href");
 
 			/* Making sure to only check links that are worthy and not pointless */
 			if (!closed_list.contains(link) && link.contains("https://") && birthControl <= wordcloud.brachingFactor) {
-				/* Once this statement executes n times, stop */
+				/* Counter to control branching factor */
 				birthControl++;
 
 				/* Was just visited, add to closed list to make sure don't visit it again */
@@ -88,8 +90,8 @@ public class WordCloudProcessor implements Runnable {
 
 		/* If conditions haven't been met to stop recursive calls .. */
 		if (RECURSIVELY_CALL) {
-			//System.out.println("HIGHEST SCORING URL => " + queue.peek().getUrl());
-			//System.out.println("Generating new URLS From highest scoring URL");
+			// System.out.println("HIGHEST SCORING URL => " + queue.peek().getUrl());
+			// System.out.println("Generating new URLS From highest scoring URL");
 
 			Document doc = null;
 			/* Start focusing on URL's on the highest scoring page */
@@ -117,21 +119,20 @@ public class WordCloudProcessor implements Runnable {
 
 		/* Connec to child URL */
 		Document doc = Jsoup.connect(child).get();
-		
+
 		/* Get Title data without numbers and symbols */
 		String title = doc.title().replaceAll("[^a-zA-Z]+", " ").toLowerCase();
-		
+
 		/* Get Heading data without numbers and symbols */
 		String headings = doc.select("h1,h2,h3").text().replaceAll("[^a-zA-Z]+", " ").toLowerCase();
-		
+
 		/* Get Paragraph data without numbers and symbols */
 		String paragraph = doc.select("p").text().replaceAll("[^a-zA-Z]+", " ").toLowerCase();
-		
+
+		/* Go check how relevant this url is to the query word */
 		RelevanceCalculator.UrlRelevance(child, title, headings, paragraph, wordcloud.word.toLowerCase());
 
 		/* Split the contents of the extracted text with a space and put into array */
-		
-
 
 		System.out.println(child + ": Heuristic Score => " + tempHeuristic);
 		/* Map this URL and it's heuristic score, shove it onto priority queue */

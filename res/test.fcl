@@ -10,24 +10,26 @@ VAR_OUTPUT
 END_VAR
 
 FUZZIFY title			
-	TERM unpromising := (0, 1)  (5, 0);
-	TERM soso := trian 1.5 5 8.5;
-	TERM promising := (5, 0) (10, 1);
+	TERM unpromising := 0 2 4(0, 1) (2, 1) (4, 0);
+	TERM soso := (2, 0) (4,1) (6,1) (8,0);
+	TERM promising := (6, 0) (8, 1) (10, 1);
+  TERM poor := trian 0 2.5 5;
+  TERM good := trian 2.5 5 7.5;
+  TERM excellent := trian 5 7.5 10;
 END_FUZZIFY
 
 FUZZIFY heading			
-	TERM inadequate := (0, 1) (1, 1) (5, 0); 
-	TERM marginal := trian 1.5 5 8.5;
-	TERM adequate := (5, 0) (10, 1) (10, 1);
+	TERM inadequate := (0, 1) (2, 1) (4, 0); 
+	TERM marginal := (2, 0) (4,1) (6,1) (8,0);
+	TERM adequate := (6, 0) (8, 1) (10, 1);
 END_FUZZIFY
 
 DEFUZZIFY relevance			
-	TERM insubstantial := (0,0) (0,1) (45,0);
-	TERM borderline := (15,0) (50,1) (85,0);
-	TERM substantial := (55,0) (100, 1) (100,0);
-
+	TERM insubstantial := (0,0) (0,1) (15,1) (35,0);
+	TERM borderline := (20,0) (35,1) (65,1) (80,0);
+	TERM substantial := (65,0) (85, 1)(100, 1) (100,0);
 	METHOD : COG;
-	DEFAULT := 10;
+	DEFAULT := 0;
 END_DEFUZZIFY
 
 RULEBLOCK No1
@@ -41,10 +43,10 @@ RULEBLOCK No1
 
 	RULE 4 : IF title IS soso AND heading IS inadequate THEN relevance is insubstantial;
 	RULE 5 : IF title IS soso AND heading IS marginal THEN relevance is borderline;
-	RULE 6 : IF title IS soso AND heading IS adequate THEN relevance is borderline;
+	RULE 6 : IF title IS soso AND heading IS adequate THEN relevance is substantial;
 
 	RULE 7 : IF title IS promising AND heading IS inadequate THEN relevance is borderline;
-	RULE 8 : IF title IS promising AND heading IS marginal THEN relevance is borderline;
+	RULE 8 : IF title IS promising AND heading IS marginal THEN relevance is substantial;
 	RULE 9 : IF title IS promising AND heading IS adequate THEN relevance is substantial;
 
 END_RULEBLOCK

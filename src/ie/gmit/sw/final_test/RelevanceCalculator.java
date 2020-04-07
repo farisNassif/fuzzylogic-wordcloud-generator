@@ -33,17 +33,15 @@ public class RelevanceCalculator {
 		}
 
 		FIS fis = FIS.load("./res/UrlRelevance.fcl", true);
-		FunctionBlock fb = fis.getFunctionBlock("relevance");
+		FunctionBlock fb = fis.getFunctionBlock("urlrelevance");
 		
-	    fis.setVariable("title",highlyRelevant);
-	    fis.setVariable("heading",somewhatRelevant);
-	    fis.setVariable("paragraph",barelyRelevant);
+	    fis.setVariable("title",Math.log1p(highlyRelevant));
+	    fis.setVariable("heading",Math.log1p(somewhatRelevant));
+
 	    fis.evaluate();
 	    Variable relevance = fb.getVariable("relevance");
-	    //System.out.println(relevance.getLatestDefuzzifiedValue());
-	    System.out.println("Real: " + highlyRelevant + " Log: " + Math.log10(highlyRelevant));
-	    System.out.println("Real: " + somewhatRelevant + " Log: " + Math.log10(somewhatRelevant));
-	    System.out.println("Real: " + barelyRelevant + " Log: " + Math.log10(barelyRelevant));
+	    System.out.println(relevance.getLatestDefuzzifiedValue() + "total = "  + somewhatRelevant+highlyRelevant);
+
 	    
 		//System.out.println("high: " + highlyRelevant + " med: " + somewhatRelevant + " low: " + barelyRelevant);
 	}
