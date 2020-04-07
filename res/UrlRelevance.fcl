@@ -39,24 +39,24 @@ RULEBLOCK No1
 		AND depth IS superficial 
 		THEN relevance IS substantial;
 
-	RULE 1 :IF occurance IS perennial 	
+	RULE 2 :IF occurance IS perennial 	
 		AND depth IS shallow
 		THEN relevance IS substantial;
 
-	RULE 1 :IF occurance IS perennial 	
+	RULE 3 :IF occurance IS perennial 	
 		AND depth IS chasmic 
 		THEN relevance IS borderline;
 
-	RULE 1 :IF occurance IS periodic 	
+	RULE 4 :IF occurance IS periodic 	
 		AND depth IS superficial
 		OR depth IS shallow
 		THEN relevance IS borderline;
 
-	RULE 1 :IF occurance IS periodic 	
+	RULE 5 :IF occurance IS periodic 	
 		AND depth IS chasmic
 		THEN relevance IS insubstantial;
 
-	RULE 1 :IF occurance IS sporadic 	
+	RULE 6 :IF occurance IS sporadic 	
 		THEN relevance IS insubstantial;
 END_RULEBLOCK
 

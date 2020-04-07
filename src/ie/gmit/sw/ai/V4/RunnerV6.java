@@ -23,7 +23,7 @@ public class RunnerV6 {
 	public static Set<String> closed_list = new ConcurrentSkipListSet<>();
 	// .reversed() makes life a lot easier when polling the queue, actually polls
 	// highest valued first
-	public static Queue<UrlNode> queue = new PriorityQueue<>(Comparator.comparing(UrlNode::getScore).reversed());
+	public static Queue<UrlScore> queue = new PriorityQueue<>(Comparator.comparing(UrlScore::getScore).reversed());
 	public static Collection<Weight_Names> weight_keyset = Document_Weights.Weight_Value_Mapping().keySet();
 	public static Map<String, Integer> word_freq = new ConcurrentHashMap<String, Integer>();
 	
@@ -147,7 +147,7 @@ public class RunnerV6 {
 			i++;
 		}
 		System.out.println(url_to_score + ": Heuristic Score => " + heuristicScore);
-		queue.offer(new UrlNode(url_to_score, heuristicScore));
+		queue.offer(new UrlScore(url_to_score, heuristicScore));
 		return heuristicScore;
 	}
 

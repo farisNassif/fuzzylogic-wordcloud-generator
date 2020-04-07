@@ -1,10 +1,10 @@
 package ie.gmit.sw.ai.V4;
 
-public final class UrlNode {
+public final class UrlScore {
 	private String url;
 	private int score;
 
-	public UrlNode(String url, int score) {
+	public UrlScore(String url, int score) {
 		super();
 		this.url = url;
 		this.score = score;

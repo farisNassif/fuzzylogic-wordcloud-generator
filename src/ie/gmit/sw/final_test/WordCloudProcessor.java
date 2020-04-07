@@ -14,6 +14,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import ie.gmit.sw.ai.V4.IgnoreWords;
+import ie.gmit.sw.final_test.utilities.MapSort;
+
 /* Handles the internal processing of the wordcloud */
 public class WordCloudProcessor implements Runnable {
 	/* Wordcloud object containing query word, branching factor and max depth */
@@ -22,10 +25,7 @@ public class WordCloudProcessor implements Runnable {
 	private Set<String> closed_list = new ConcurrentSkipListSet<>();
 	/* Maps a word to it's frequency */
 	private Map<String, Integer> word_freq = new ConcurrentHashMap<String, Integer>();
-	/* Maps a node to it's depth in the tree */
-	private Map<String, Integer> node_tree = new ConcurrentHashMap<String, Integer>();
-	/* Maps words preceeding and proceeding the query word to frequency */
-	private Map<String, Integer> associated_word_freq = new ConcurrentHashMap<String, Integer>();
+
 	/* Holds all scored URL's */
 	private Queue<UrlNode> queue = new PriorityQueue<>(Comparator.comparing(UrlNode::getScore).reversed());
 	private boolean RECURSIVELY_CALL = true;
@@ -40,6 +40,8 @@ public class WordCloudProcessor implements Runnable {
 		System.out.println("Processing wordcloud ...");
 		/* Start processing */
 		InitializeSearch();
+		word_freq = MapSort.crunchifySortMap(word_freq); // Sort the map in reverse order
+		System.out.println(word_freq.entrySet());
 		System.out.println("Finished");
 	}
 
@@ -51,8 +53,6 @@ public class WordCloudProcessor implements Runnable {
 		try {
 			/* Kick off initial search for query word */
 			doc = Jsoup.connect(initial_url + wordcloud.word).get();
-			/* Initial node in the tree, stick it in the node_tree map */
-			node_tree.put(initial_url + wordcloud.word, 0);
 			/* Was visited, add to closed list */
 			closed_list.add(initial_url);
 		} catch (IOException e) {
@@ -70,26 +70,27 @@ public class WordCloudProcessor implements Runnable {
 	private void GenerateChildNodes(Elements children) {
 		/* Variable to just control branching factor */
 		int birthControl = 1;
-		
+
 		/* For each child url .. */
 		for (Element child : children) {
 			/* Get absolute URL and clean any HTML syntax off it */
 			String link = child.attr("href");
-			
+
 			/* Making sure to only check links that are worthy and not pointless */
 			if (!closed_list.contains(link) && link.contains("https://") && birthControl <= wordcloud.brachingFactor) {
 				/* Counter to control branching factor */
 				birthControl++;
-				System.out.println(child.parent().baseUri());
+
 				/* Was just visited, add to closed list to make sure don't visit it again */
 				closed_list.add(link);
-				
+
 				/* Pass the URL to be scored */
 				try {
 					ScoreChildren(link);
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
+
 			}
 		}
 
@@ -101,12 +102,16 @@ public class WordCloudProcessor implements Runnable {
 			Document doc = null;
 			/* Start focusing on URL's on the highest scoring page */
 			try {
-				doc = Jsoup.connect(queue.poll().getUrl()).get();
+				/* Assign to this the highest scoring url */
+				doc = Jsoup.connect(queue.peek().getUrl()).get();
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			Elements child_elements = doc.select("a");
+			/* Get rid of highest scoring URL, score its contents */
+			MapWords(queue.poll().getUrl());
+
+			/* Make new children links from the child with highest heuristic */
+			Elements recursive_children = doc.select("a");
 
 			/* If max amounts of URL's have been visited, stop recursive calls */
 			if (closed_list.size() > wordcloud.maxDepth) {
@@ -114,7 +119,7 @@ public class WordCloudProcessor implements Runnable {
 			}
 
 			/* Recursive call to this method */
-			GenerateChildNodes(child_elements);
+			GenerateChildNodes(recursive_children);
 		}
 	}
 
@@ -132,8 +137,45 @@ public class WordCloudProcessor implements Runnable {
 		/* Get Paragraph data without numbers and symbols */
 		String paragraph = doc.select("p").text().replaceAll("[^a-zA-Z]+", " ").toLowerCase();
 
-		// System.out.println(child + ": Heuristic Score => " + RelevanceCalculator.UrlRelevance(child, title, headings, paragraph, wordcloud.word.toLowerCase()));
+		System.out.println(child + ": Heuristic Score => "
+				+ RelevanceCalculator.UrlRelevance(child, title, headings, paragraph, wordcloud.word.toLowerCase()));
 		/* Map this URL and it's heuristic score, shove it onto priority queue */
-		queue.offer(new UrlNode(child, RelevanceCalculator.UrlRelevance(child, title, headings, paragraph, wordcloud.word.toLowerCase())));
+		queue.offer(new UrlNode(child,
+				RelevanceCalculator.UrlRelevance(child, title, headings, paragraph, wordcloud.word.toLowerCase())));
+	}
+
+	/* Maps all words on the highest scoring page to frequency */
+	private void MapWords(String url) {
+		Document doc = null;
+
+		try {
+			/* Connect to the highest */
+			doc = Jsoup.connect(url).get();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		/* Get the whole text without symbolds or numbers */
+		String wholetext = doc.wholeText().replaceAll("[^a-zA-Z]", " ").toLowerCase();
+		String[] words = wholetext.split(" ");
+
+		/* For each word .. */
+		for (String s : words) {
+			try {
+				/* If it's worthless and irrelevant .. */
+				if ((s.length() <= 2) || (IgnoreWords.ignoreWords().contains(s))
+						|| (wordcloud.word.contains(s) || ((wordcloud.word + "s").contains(s)))) {
+					// Ignore word
+				} else if (word_freq.containsKey(s)) {
+					/* If it was encountered before, increment */
+					word_freq.replace(s, word_freq.get(s), word_freq.get(s) + 1);
+				} else {
+					/* If this was the first time encountering it, put into map */
+					word_freq.put(s, 1);
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
 	}
 }

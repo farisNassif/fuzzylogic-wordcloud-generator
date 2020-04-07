@@ -45,7 +45,7 @@ public class RelevanceCalculator {
 		FunctionBlock fb = fis.getFunctionBlock("urlrelevance");
 
 		fis.setVariable("occurance", Math.log1p(occuranceScore));
-		fis.setVariable("depth", 1);
+		fis.setVariable("depth", 3);
 
 		fis.evaluate();
 		Variable relevance = fb.getVariable("relevance");

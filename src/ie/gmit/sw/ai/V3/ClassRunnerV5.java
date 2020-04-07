@@ -16,7 +16,7 @@ import org.jsoup.select.Elements;
 
 import ie.gmit.sw.ai.V4.Document_Weights;
 import ie.gmit.sw.ai.V4.IgnoreWords;
-import ie.gmit.sw.ai.V4.UrlNode;
+import ie.gmit.sw.ai.V4.UrlScore;
 
 public class ClassRunnerV5 implements Runnable {
 	private final static int BRANCHING_FACTOR = 5;
@@ -25,7 +25,7 @@ public class ClassRunnerV5 implements Runnable {
 	private static Set<String> closed_list = new ConcurrentSkipListSet<>();
 	// .reversed() makes life a lot easier when polling the queue, actually polls
 	// highest valued first
-	private Queue<UrlNode> queue = new PriorityQueue<>(Comparator.comparing(UrlNode::getScore).reversed());
+	private Queue<UrlScore> queue = new PriorityQueue<>(Comparator.comparing(UrlScore::getScore).reversed());
 	public static String query_text = "add";
 
 	@Override
@@ -146,7 +146,7 @@ public class ClassRunnerV5 implements Runnable {
 
 		// Print out if I wanna check individual url scorings
 		System.out.println(url_to_score + " " + heuristicScore);
-		queue.offer(new UrlNode(url_to_score, heuristicScore));
+		queue.offer(new UrlScore(url_to_score, heuristicScore));
 
 		return heuristicScore;
 	}

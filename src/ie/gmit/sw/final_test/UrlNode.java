@@ -1,7 +1,6 @@
 package ie.gmit.sw.final_test;
 
-/* Simple node class that defines a node
- * Could have even had this as a map */
+/* Simple node class that defines a URL object */
 public final class UrlNode {
 	private String url;
 	private double score;
