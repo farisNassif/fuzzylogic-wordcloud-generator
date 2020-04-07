@@ -1,0 +1,49 @@
+FUNCTION_BLOCK relevance	// Block definition (there may be more than one block per file)
+
+VAR_INPUT				
+	title : REAL;
+	heading : REAL;
+	paragraph: REAL;
+END_VAR
+
+VAR_OUTPUT				
+	relevance : REAL;
+END_VAR
+
+FUZZIFY title	
+	TERM insignificant := (0, 1) (4, 0);
+	TERM somewhatignificant := (1, 0) (4,1) (6,1) (9,0);
+	TERM significant := (6, 0) (9, 1);
+END_FUZZIFY
+
+FUZZIFY heading			
+	TERM irrelevant := (0, 1) (1, 1) (3,0);
+	TERM relevant := (7,0) (9,1);
+END_FUZZIFY
+
+FUZZIFY paragraph		
+     	TERM poor := (0,0) (5,1) (10,0);
+     	TERM average := (10,0) (15,1) (20,0);
+	TERM excellent := (20,0) (25,1) (30,0);
+END_FUZZIFY
+
+DEFUZZIFY relevance
+	TERM low := 1;
+     	TERM average := 2;
+     	TERM high := 3;
+     	METHOD : COG;
+	DEFAULT := 0;
+END_DEFUZZIFY
+
+RULEBLOCK No1
+	AND : MIN;	// Use 'min' for 'and'
+	ACT : MIN;	// Use 'min' activation method
+	ACCU : MAX;	// Use 'max' accumulation method
+	RULE 1 : IF title IS significant AND heading IS relevant OR paragraph IS frequent THEN relevance IS high;
+	RULE 2 : IF title IS significant AND heading IS relevant OR paragraph IS average THEN relevance IS average;
+     	RULE 3 : IF title IS significant AND heading IS relevant OR paragraph IS rare THEN relevance IS average;
+
+	
+END_RULEBLOCK
+
+END_FUNCTION_BLOCK

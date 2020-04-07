@@ -14,8 +14,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import ie.gmit.sw.final_test.utilities.MapSort;
-
 /* Handles the internal processing of the wordcloud */
 public class WordCloudProcessor implements Runnable {
 	/* Wordcloud object containing query word, branching factor and max depth */
@@ -87,10 +85,11 @@ public class WordCloudProcessor implements Runnable {
 				}
 			}
 		}
+
 		/* If conditions haven't been met to stop recursive calls .. */
 		if (RECURSIVELY_CALL) {
-			System.out.println("HIGHEST SCORING URL => " + queue.peek().getUrl());
-			System.out.println("Generating new URLS From highest scoring URL");
+			//System.out.println("HIGHEST SCORING URL => " + queue.peek().getUrl());
+			//System.out.println("Generating new URLS From highest scoring URL");
 
 			Document doc = null;
 			/* Start focusing on URL's on the highest scoring page */
@@ -101,6 +100,11 @@ public class WordCloudProcessor implements Runnable {
 				e1.printStackTrace();
 			}
 			Elements child_elements = doc.select("a");
+
+			/* If max amounts of URL's have been visited, stop recursive calls */
+			if (closed_list.size() > wordcloud.maxDepth) {
+				RECURSIVELY_CALL = false;
+			}
 
 			/* Recursive call to this method */
 			GenerateChildNodes(child_elements);
@@ -113,21 +117,22 @@ public class WordCloudProcessor implements Runnable {
 
 		/* Connec to child URL */
 		Document doc = Jsoup.connect(child).get();
-
-		/* Get the body text of the URL without numbers and symbols */
-		String textToExtract = doc.select("body").text().replaceAll("[^a-zA-Z]+", " ");
+		
+		/* Get Title data without numbers and symbols */
+		String title = doc.title().replaceAll("[^a-zA-Z]+", " ").toLowerCase();
+		
+		/* Get Heading data without numbers and symbols */
+		String headings = doc.select("h1,h2,h3").text().replaceAll("[^a-zA-Z]+", " ").toLowerCase();
+		
+		/* Get Paragraph data without numbers and symbols */
+		String paragraph = doc.select("p").text().replaceAll("[^a-zA-Z]+", " ").toLowerCase();
+		
+		RelevanceCalculator.UrlRelevance(child, title, headings, paragraph, wordcloud.word.toLowerCase());
 
 		/* Split the contents of the extracted text with a space and put into array */
-		String[] tag_data = textToExtract.split(" ");
+		
 
-		/* For each word in the array .. */
-		for (String word : tag_data) {
-			/* If the queried word is found .. */
-			if (word.toLowerCase().contains(wordcloud.word.toLowerCase())) {
-				/* Heuristic score for this URL should increase */
-				tempHeuristic++;
-			}
-		}
+
 		System.out.println(child + ": Heuristic Score => " + tempHeuristic);
 		/* Map this URL and it's heuristic score, shove it onto priority queue */
 		queue.offer(new UrlNode(child, tempHeuristic));
