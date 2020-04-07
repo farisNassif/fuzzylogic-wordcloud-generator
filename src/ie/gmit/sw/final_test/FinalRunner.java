@@ -4,7 +4,7 @@ public class FinalRunner {
 
 	public static void main(String[] args) {
 		/* Have params be input via tomcat in the future */
-		Wordcloud wordcloud = new Wordcloud("coronavirus", 3, 15);
+		Wordcloud wordcloud = new Wordcloud("computer", 3, 15);
 
 		/* Process the wordcloud */
 		Thread thread = new Thread(new WordCloudProcessor(wordcloud));

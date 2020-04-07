@@ -8,41 +8,47 @@ public class RelevanceCalculator {
 
 	/* Scores the url based on how relevant it is */
 	public static void UrlRelevance(String child, String title, String headings, String paragraph, String query) {
-		double highlyRelevant = 0;
-		double somewhatRelevant = 0;
-		double barelyRelevant = 0;
+		double occuranceScore = 0;
+
+		/* Well aware this will clog up everything, will optimize if time towards end */
 
 		/* If the URL itself contains the query word */
 		if (child.contains(query)) {
-			highlyRelevant += 100;
+			occuranceScore += 100;
 		}
 
 		String[] iterable_contents = title.split(" ");
 		for (String word : iterable_contents) {
-			highlyRelevant += 50;
+			if (word.contains(query)) {
+				occuranceScore += 50;
+			}
 		}
 
 		iterable_contents = headings.split(" ");
 		for (String word : iterable_contents) {
-			somewhatRelevant += 25;
+			if (word.contains(query)) {
+				occuranceScore += 30;
+			}
 		}
 
 		iterable_contents = paragraph.split(" ");
 		for (String word : iterable_contents) {
-			barelyRelevant += 3;
+			if (word.contains(query)) {
+				occuranceScore += 5;
+			}
 		}
 
 		FIS fis = FIS.load("./res/UrlRelevance.fcl", true);
 		FunctionBlock fb = fis.getFunctionBlock("urlrelevance");
-		
-	    fis.setVariable("title",Math.log1p(highlyRelevant));
-	    fis.setVariable("heading",Math.log1p(somewhatRelevant));
 
-	    fis.evaluate();
-	    Variable relevance = fb.getVariable("relevance");
-	    System.out.println(relevance.getLatestDefuzzifiedValue() + "total = "  + somewhatRelevant+highlyRelevant);
+		fis.setVariable("occurance",Math.log1p(occuranceScore));
+		fis.setVariable("depth",1);
 
-	    
-		//System.out.println("high: " + highlyRelevant + " med: " + somewhatRelevant + " low: " + barelyRelevant);
+		fis.evaluate();
+		// Variable relevance = fb.getVariable("relevance");
+		// System.out.println(relevance.getLatestDefuzzifiedValue() + "total = " +
+		// occuranceScore);
+
+		System.out.println("total = " + occuranceScore);
 	}
 }
