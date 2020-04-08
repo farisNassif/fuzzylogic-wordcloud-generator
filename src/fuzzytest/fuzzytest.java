@@ -18,8 +18,8 @@ public class fuzzytest {
         JFuzzyChart.get().chart(fb);
 
         // Set inputs
-        fis.setVariable("occurance",9);
-        fis.setVariable("depth",7);
+        fis.setVariable("occurance",2);
+        fis.setVariable("depth",1);
         
 		fis.evaluate();
         // Show output variable's chart

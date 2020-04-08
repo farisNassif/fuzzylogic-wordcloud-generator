@@ -3,8 +3,8 @@ package ie.gmit.sw.ai.V4;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -27,5 +27,19 @@ public class IgnoreWords {
 			e.printStackTrace();
 		}
 		return ignoreWords;
+	}
+
+	/* When generating freq table, need to ignore actual query word + plural */
+	public static void ignoreQuery(String query) {
+		String filename = "ignorewords.txt";
+		FileWriter fw = null;
+		try {
+			fw = new FileWriter(filename, true);
+			fw.write("\n" + query);
+			fw.write("\n" + query + "s");
+			fw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

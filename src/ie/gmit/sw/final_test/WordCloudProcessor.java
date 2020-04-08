@@ -37,11 +37,16 @@ public class WordCloudProcessor implements Runnable {
 
 	@Override
 	public void run() {
+		/* Query word to be ignored when generating freq table */
+		IgnoreWords.ignoreQuery(wordcloud.word);
+
 		System.out.println("Processing wordcloud ...");
 		/* Start processing */
 		InitializeSearch();
+
 		word_freq = MapSort.crunchifySortMap(word_freq); // Sort the map in reverse order
 		System.out.println(word_freq.entrySet());
+
 		System.out.println("Finished");
 	}
 
@@ -162,8 +167,7 @@ public class WordCloudProcessor implements Runnable {
 		for (String s : words) {
 			try {
 				/* If it's worthless and irrelevant .. */
-				if ((s.length() <= 2) || (IgnoreWords.ignoreWords().contains(s))
-						|| (wordcloud.word.contains(s) || ((wordcloud.word + "s").contains(s)))) {
+				if ((s.length() <= 2) || (IgnoreWords.ignoreWords().contains(s))) {
 					// Ignore word
 				} else if (word_freq.containsKey(s)) {
 					/* If it was encountered before, increment */

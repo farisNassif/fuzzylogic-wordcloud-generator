@@ -10,9 +10,9 @@ VAR_OUTPUT
 END_VAR
 
 FUZZIFY occurance			
-	TERM sporadic := (0, 1)  (7.5, 0);
-	TERM periodic := trian 1 5 9;
-	TERM perennial := (2.5, 0) (10, 1);
+	TERM sporadic := (0, 1) (2, 1) (7.5, 0);
+	TERM periodic := trian 2 5 9;
+	TERM perennial := (3.5, 0) (9, 1)(10, 1);
 END_FUZZIFY
 
 FUZZIFY depth		
@@ -22,6 +22,7 @@ FUZZIFY depth
 END_FUZZIFY
 
 DEFUZZIFY relevance
+	TERM nonexistant := (0,0);
     	TERM insubstantial := (0,0) (16.65,1) (33.3,0);
     	TERM borderline := (33.3,0) (50,1) (66.6,0);
     	TERM substantial := (66.6,0) (83.25,1) (100,0);
@@ -56,8 +57,8 @@ RULEBLOCK No1
 		AND depth IS chasmic
 		THEN relevance IS insubstantial;
 
-	RULE 6 :IF occurance IS sporadic 	
-		THEN relevance IS insubstantial;
+	RULE 6 :IF occurance IS sporadic 
+		THEN relevance IS nonexistant;
 END_RULEBLOCK
 
 END_FUNCTION_BLOCK
