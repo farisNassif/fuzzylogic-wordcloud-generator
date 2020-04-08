@@ -3,7 +3,7 @@ package complete.deploy;
 import java.util.ArrayList;
 import java.util.List;
 
-/* Simple node class that defines a URL object */
+/* Simple node class that defines a child object */
 public final class Node implements Comparable<Node> {
 	private String url;
 	private double score;

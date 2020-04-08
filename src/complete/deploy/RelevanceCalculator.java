@@ -56,9 +56,8 @@ public class RelevanceCalculator {
 		fis.setVariable("depth", depth);
 
 		fis.evaluate();
+		
 		Variable relevance = fb.getVariable("relevance");
-		// System.out.println(relevance.getLatestDefuzzifiedValue() + " total = " +
-		// Math.log1p(occuranceScore) + " orig: " + occuranceScore);
 		return relevance.getLatestDefuzzifiedValue();
 
 	}
