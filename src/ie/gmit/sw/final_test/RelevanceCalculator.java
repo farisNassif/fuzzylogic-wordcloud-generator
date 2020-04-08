@@ -29,7 +29,7 @@ public class RelevanceCalculator {
 		/* Score Heading Text */
 		for (String word : iterable_contents) {
 			if (word.contains(query)) {
-				occuranceScore += 30;
+				occuranceScore += 25;
 			}
 		}
 
@@ -45,11 +45,11 @@ public class RelevanceCalculator {
 		FunctionBlock fb = fis.getFunctionBlock("urlrelevance");
 
 		fis.setVariable("occurance", Math.log1p(occuranceScore));
-		fis.setVariable("depth", 3);
+		fis.setVariable("depth", 1);
 
 		fis.evaluate();
 		Variable relevance = fb.getVariable("relevance");
-		//System.out.println(relevance.getLatestDefuzzifiedValue() + "total = " + Math.log1p(occuranceScore));
+		// System.out.println(relevance.getLatestDefuzzifiedValue() + " total = " + Math.log1p(occuranceScore) + " orig: " + occuranceScore);
 		return relevance.getLatestDefuzzifiedValue();
 
 	}

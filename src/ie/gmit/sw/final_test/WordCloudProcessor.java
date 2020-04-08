@@ -25,9 +25,9 @@ public class WordCloudProcessor implements Runnable {
 	private Set<String> closed_list = new ConcurrentSkipListSet<>();
 	/* Maps a word to it's frequency */
 	private Map<String, Integer> word_freq = new ConcurrentHashMap<String, Integer>();
-
 	/* Holds all scored URL's */
 	private Queue<UrlNode> queue = new PriorityQueue<>(Comparator.comparing(UrlNode::getScore).reversed());
+	/* To check if conditions are met to continue recursive calls */
 	private boolean RECURSIVELY_CALL = true;
 
 	public WordCloudProcessor(Wordcloud wordcloud) {
@@ -75,32 +75,32 @@ public class WordCloudProcessor implements Runnable {
 	private void GenerateChildNodes(Elements children) {
 		/* Variable to just control branching factor */
 		int birthControl = 1;
-
-		/* For each child url .. */
-		for (Element child : children) {
-			/* Get absolute URL and clean any HTML syntax off it */
-			String link = child.attr("href");
-
-			/* Making sure to only check links that are worthy and not pointless */
-			if (!closed_list.contains(link) && link.contains("https://") && birthControl <= wordcloud.brachingFactor) {
-				/* Counter to control branching factor */
-				birthControl++;
-
-				/* Was just visited, add to closed list to make sure don't visit it again */
-				closed_list.add(link);
-
-				/* Pass the URL to be scored */
-				try {
-					ScoreChildren(link);
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				}
-
-			}
-		}
-
+		
 		/* If conditions haven't been met to stop recursive calls .. */
 		if (RECURSIVELY_CALL) {
+			/* For each child url .. */
+			for (Element child : children) {
+				/* Get absolute URL and clean any HTML syntax off it */
+				String link = child.attr("href");
+
+				/* Making sure to only check links that are worthy and not pointless */
+				if (!closed_list.contains(link) && link.contains("https://")
+						&& birthControl <= wordcloud.brachingFactor) {
+					/* Counter to control branching factor */
+					birthControl++;
+
+					/* Was just visited, add to closed list to make sure don't visit it again */
+					closed_list.add(link);
+
+					/* Pass the URL to be scored */
+					try {
+						ScoreChildren(link);
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				}
+			}
+
 			System.out.println("HIGHEST SCORING URL => " + queue.peek().getUrl());
 			System.out.println("Generating new URLS From highest scoring URL");
 
@@ -119,7 +119,7 @@ public class WordCloudProcessor implements Runnable {
 			Elements recursive_children = doc.select("a");
 
 			/* If max amounts of URL's have been visited, stop recursive calls */
-			if (closed_list.size() > wordcloud.maxDepth) {
+			if (closed_list.size() >= wordcloud.maxDepth) {
 				RECURSIVELY_CALL = false;
 			}
 
@@ -164,22 +164,21 @@ public class WordCloudProcessor implements Runnable {
 		String[] words = wholetext.split(" ");
 
 		/* For each word .. */
-		for (String s : words) {
+		for (String word : words) {
 			try {
 				/* If it's worthless and irrelevant .. */
-				if ((s.length() <= 2) || (IgnoreWords.ignoreWords().contains(s))) {
+				if ((word.length() <= 2) || (IgnoreWords.ignoreWords().contains(word))) {
 					// Ignore word
-				} else if (word_freq.containsKey(s)) {
+				} else if (word_freq.containsKey(word)) {
 					/* If it was encountered before, increment */
-					word_freq.replace(s, word_freq.get(s), word_freq.get(s) + 1);
+					word_freq.replace(word, word_freq.get(word), word_freq.get(word) + 1);
 				} else {
 					/* If this was the first time encountering it, put into map */
-					word_freq.put(s, 1);
+					word_freq.put(word, 1);
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-
 	}
 }

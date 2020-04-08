@@ -8,9 +8,7 @@ import net.sourceforge.jFuzzyLogic.rule.Variable;
 public class fuzzytest {
 
 	public static void main(String[] args) {
-		double highlyRelevant = 305;
-		double somewhatRelevant = 214;
-		double barelyRelevant = 213;
+		double test = 333333;
 
 		FIS fis = FIS.load("./res/urlrelevance.fcl", true);
 		FunctionBlock fb = fis.getFunctionBlock("urlrelevance");
@@ -18,7 +16,7 @@ public class fuzzytest {
         JFuzzyChart.get().chart(fb);
 
         // Set inputs
-        fis.setVariable("occurance",2);
+        fis.setVariable("occurance",10);
         fis.setVariable("depth",1);
         
 		fis.evaluate();
@@ -28,15 +26,10 @@ public class fuzzytest {
 
         // Print ruleSet
         System.out.println(fis);
-        
-		
+        System.out.println(relevance.getLatestDefuzzifiedValue());
+		System.out.println(Math.log1p(test));
 		//Variable relevance = fb.getVariable("tipper");
-		
-		// System.out.println(relevance.getLatestDefuzzifiedValue());
-		System.out.println("Real: " + highlyRelevant + " Log: " + Math.log10(highlyRelevant));
-		System.out.println("Real: " + somewhatRelevant + " Log: " + Math.log10(somewhatRelevant));
-		System.out.println("Real: " + barelyRelevant + " Log: " + Math.log10(barelyRelevant));
-		
+
 		
 		/* 	IF title IS unpromising AND heading IS inadequate THEN relevance is insubstantial;
 	IF title IS soso AND heading IS marginal THEN relevance is borderline;
