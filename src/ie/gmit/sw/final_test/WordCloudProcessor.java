@@ -72,7 +72,6 @@ public class WordCloudProcessor implements Runnable {
 
 		/* Get the resulting links of the initial URL and query text */
 		Elements elements = doc.select("a");
-		System.out.println(elements.parents().last());
 		/* Generate child URL nodes based on initial query */
 		GenerateChildNodes(elements);
 	}
@@ -169,6 +168,7 @@ public class WordCloudProcessor implements Runnable {
 		String wholetext = doc.wholeText().replaceAll("[^a-zA-Z]", " ").toLowerCase();
 		String[] words = wholetext.split(" ");
 
+
 		/* For each word .. */
 		for (String word : words) {
 			try {
@@ -183,7 +183,6 @@ public class WordCloudProcessor implements Runnable {
 						word_freq.put(word, 1);
 					}
 				}
-
 				/* Start taking note of words adjacent the query word .. */
 				/*
 				 * if (word.contains(wordcloud.word.toLowerCase()) && i > 3) { // Deal with
