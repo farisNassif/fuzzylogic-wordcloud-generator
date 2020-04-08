@@ -35,7 +35,6 @@ public class IgnoreWords {
 		FileWriter fw = null;
 		try {
 			fw = new FileWriter(filename, true);
-			fw.write("\n" + query);
 			fw.write("\n" + query + "s");
 			fw.close();
 		} catch (IOException e) {

@@ -25,6 +25,8 @@ public class WordCloudProcessor implements Runnable {
 	private Set<String> closed_list = new ConcurrentSkipListSet<>();
 	/* Maps a word to it's frequency */
 	private Map<String, Integer> word_freq = new ConcurrentHashMap<String, Integer>();
+	/* Maps an adjacent word to it's frequency */
+	private Map<String, Integer> adj_word_freq = new ConcurrentHashMap<String, Integer>();
 	/* Holds all scored URL's */
 	private Queue<UrlNode> queue = new PriorityQueue<>(Comparator.comparing(UrlNode::getScore).reversed());
 	/* To check if conditions are met to continue recursive calls */
@@ -44,9 +46,12 @@ public class WordCloudProcessor implements Runnable {
 		/* Start processing */
 		InitializeSearch();
 
-		word_freq = MapSort.crunchifySortMap(word_freq); // Sort the map in reverse order
-		System.out.println(word_freq.entrySet());
+		/* Sort the maps in reverse order high to low values */
+		word_freq = MapSort.crunchifySortMap(word_freq);
+		// adj_word_freq = MapSort.crunchifySortMap(adj_word_freq);
 
+		System.out.println(word_freq.entrySet());
+		// System.out.println(adj_word_freq.entrySet());
 		System.out.println("Finished");
 	}
 
@@ -58,6 +63,7 @@ public class WordCloudProcessor implements Runnable {
 		try {
 			/* Kick off initial search for query word */
 			doc = Jsoup.connect(initial_url + wordcloud.word).get();
+			// doc = Jsoup.connect(initial_url + wordcloud.word).userAgent("Mozilla").get();
 			/* Was visited, add to closed list */
 			closed_list.add(initial_url);
 		} catch (IOException e) {
@@ -66,7 +72,7 @@ public class WordCloudProcessor implements Runnable {
 
 		/* Get the resulting links of the initial URL and query text */
 		Elements elements = doc.select("a");
-
+		System.out.println(elements.parents().last());
 		/* Generate child URL nodes based on initial query */
 		GenerateChildNodes(elements);
 	}
@@ -75,7 +81,6 @@ public class WordCloudProcessor implements Runnable {
 	private void GenerateChildNodes(Elements children) {
 		/* Variable to just control branching factor */
 		int birthControl = 1;
-		
 		/* If conditions haven't been met to stop recursive calls .. */
 		if (RECURSIVELY_CALL) {
 			/* For each child url .. */
@@ -152,7 +157,8 @@ public class WordCloudProcessor implements Runnable {
 	/* Maps all words on the highest scoring page to frequency */
 	private void MapWords(String url) {
 		Document doc = null;
-
+		/* Counter to retrieve adjacent words */
+		int i = 0;
 		try {
 			/* Connect to the highest */
 			doc = Jsoup.connect(url).get();
@@ -166,19 +172,36 @@ public class WordCloudProcessor implements Runnable {
 		/* For each word .. */
 		for (String word : words) {
 			try {
-				/* If it's worthless and irrelevant .. */
-				if ((word.length() <= 2) || (IgnoreWords.ignoreWords().contains(word))) {
-					// Ignore word
-				} else if (word_freq.containsKey(word)) {
-					/* If it was encountered before, increment */
-					word_freq.replace(word, word_freq.get(word), word_freq.get(word) + 1);
-				} else {
-					/* If this was the first time encountering it, put into map */
-					word_freq.put(word, 1);
+				/* If it's not worthless and irrelevant .. */
+				if ((word.length() > 2) && (!IgnoreWords.ignoreWords().contains(word))) {
+					/* If the word was already mapped */
+					if (word_freq.containsKey(word)) {
+						/* If it was encountered before, increment */
+						word_freq.replace(word, word_freq.get(word), word_freq.get(word) + 1);
+					} else {
+						/* If this was the first time encountering it, put into map */
+						word_freq.put(word, 1);
+					}
 				}
+
+				/* Start taking note of words adjacent the query word .. */
+				/*
+				 * if (word.contains(wordcloud.word.toLowerCase()) && i > 3) { // Deal with
+				 * predecessing word if (!IgnoreWords.ignoreWords().contains(words[i - 1]) &&
+				 * words[i - 1].length() >= 2) { if (adj_word_freq.containsKey(words[i - 1])) {
+				 * // Increment this word in the adjacent map adj_word_freq.replace(words[i -
+				 * 1], adj_word_freq.get(words[i - 1]), adj_word_freq.get(words[i - 1]) + 1); }
+				 * else { adj_word_freq.put(words[i - 1], 1); } } Deal with succeeding word if
+				 * (!IgnoreWords.ignoreWords().contains(words[i + 1]) && words[i + 1].length()
+				 * >= 2) { if (adj_word_freq.containsKey(words[i + 1])) { // Increment this word
+				 * in the adjacent map adj_word_freq.replace(words[i + 1],
+				 * adj_word_freq.get(words[i + 1]), adj_word_freq.get(words[i + 1]) + 1); } else
+				 * { adj_word_freq.put(words[i + 1], 1); } }
+				 */
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			i++;
 		}
 	}
 }
