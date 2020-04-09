@@ -14,8 +14,11 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import complete.deploy.util.IgnoreWords;
+import complete.deploy.util.MapSort;
+
 /* Handles the internal processing of the wordcloud */
-public class WordCloudProcessor implements Runnable {
+public class WordcloudProcessor implements Runnable {
 	/* Wordcloud object containing query word, branching factor and max depth */
 	private Wordcloud wordcloud;
 	/* Contains URL's that were already visited */
@@ -23,7 +26,7 @@ public class WordCloudProcessor implements Runnable {
 	private Queue<Node> queue = new PriorityQueue<>(Comparator.comparing(Node::getScore).reversed());
 	private Map<String, Integer> word_freq = new ConcurrentHashMap<String, Integer>();
 
-	public WordCloudProcessor(Wordcloud wordcloud) {
+	public WordcloudProcessor(Wordcloud wordcloud) {
 		super();
 		this.wordcloud = wordcloud;
 	}
@@ -80,6 +83,8 @@ public class WordCloudProcessor implements Runnable {
 		}
 
 		if (closed_list.size() < 10) {
+			System.out.println("**POLLING** URL: " + queue.peek().getUrl() + " Depth: " + queue.peek().getDepth()
+					+ " Score: " + queue.peek().getScore());
 			MapWords(queue.peek());
 			GenerateChildren(queue.poll());
 		}
@@ -105,14 +110,15 @@ public class WordCloudProcessor implements Runnable {
 		/* Get Paragraph data without numbers and symbols */
 		String paragraph = doc.select("p").text().replaceAll("[^a-zA-Z]+", " ").toLowerCase();
 
-		// System.out.println(child.getUrl() + ": Heuristic Score => "
-		// + RelevanceCalculator.UrlRelevance(child, title, headings, paragraph,
-		// wordcloud.word) + " Depth: "
-		// + child.getDepth());
+		System.out.println(child.getUrl() + ": Heuristic Score => "
+				+ RelevanceCalculator.UrlRelevance(child, title, headings, paragraph, wordcloud.word) + " Depth: "
+				+ child.getDepth());
 
 		child.setScore(RelevanceCalculator.UrlRelevance(child, title, headings, paragraph, wordcloud.word));
-		/* Map this URL and it's heuristic score, shove it onto priority queue */
+
 		queue.offer(child);
+
+
 	}
 
 	/* Maps all words on the highest scoring page to frequency */

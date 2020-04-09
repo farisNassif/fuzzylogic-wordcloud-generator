@@ -1,4 +1,4 @@
-package complete.deploy;
+package ie.gmit.bbb;
 
 import net.sourceforge.jFuzzyLogic.FIS;
 import net.sourceforge.jFuzzyLogic.FunctionBlock;
@@ -7,25 +7,17 @@ import net.sourceforge.jFuzzyLogic.rule.Variable;
 public class RelevanceCalculator {
 
 	/* Scores the url based on how relevant it is */
-	public static double UrlRelevance(Node child, String titleData, String headingsData, String paragraphData,
-			String query) {
+	public static double UrlRelevance(String child, String title, String headings, String paragraph, String query) {
 		double occuranceScore = 0;
-		int depth = 0;
-
-		if (child.getDepth() > 3) {
-			depth = 3;
-		} else {
-			depth = child.getDepth();
-		}
 
 		/* Well aware this will clog up everything, will optimize if time towards end */
 
 		/* If the URL itself contains the query word */
-		if (child.getUrl().contains(query)) {
-			occuranceScore += 150;
+		if (child.contains(query)) {
+			occuranceScore += 100;
 		}
 
-		String[] iterable_contents = titleData.split(" ");
+		String[] iterable_contents = title.split(" ");
 		/* Score Title Text */
 		for (String word : iterable_contents) {
 			if (word.contains(query)) {
@@ -33,7 +25,7 @@ public class RelevanceCalculator {
 			}
 		}
 
-		iterable_contents = headingsData.split(" ");
+		iterable_contents = headings.split(" ");
 		/* Score Heading Text */
 		for (String word : iterable_contents) {
 			if (word.contains(query)) {
@@ -41,7 +33,7 @@ public class RelevanceCalculator {
 			}
 		}
 
-		iterable_contents = paragraphData.split(" ");
+		iterable_contents = paragraph.split(" ");
 		/* Score Paragraph Text */
 		for (String word : iterable_contents) {
 			if (word.contains(query)) {
@@ -51,22 +43,13 @@ public class RelevanceCalculator {
 
 		FIS fis = FIS.load("./res/UrlRelevance.fcl", true);
 		FunctionBlock fb = fis.getFunctionBlock("urlrelevance");
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		System.out.println(occuranceScore);
-		fis.setVariable("occurance", Math.log(occuranceScore));
-		fis.setVariable("depth", depth);
+
+		fis.setVariable("occurance", Math.log1p(occuranceScore));
+		fis.setVariable("depth", 1);
 
 		fis.evaluate();
-		
 		Variable relevance = fb.getVariable("relevance");
+		// System.out.println(relevance.getLatestDefuzzifiedValue() + " total = " + Math.log1p(occuranceScore) + " orig: " + occuranceScore);
 		return relevance.getLatestDefuzzifiedValue();
 
 	}

@@ -15,7 +15,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import ie.gmit.sw.final_test.UrlNode;
+import ie.gmit.bbb.UrlNode;
 
 public class Runner {
 	private static Set<String> closed_list = new ConcurrentSkipListSet<>();

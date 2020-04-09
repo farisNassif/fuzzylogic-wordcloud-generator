@@ -1,4 +1,4 @@
-package complete.deploy;
+package ie.gmit.sw;
 
 import net.sourceforge.jFuzzyLogic.FIS;
 import net.sourceforge.jFuzzyLogic.FunctionBlock;
@@ -52,15 +52,6 @@ public class RelevanceCalculator {
 		FIS fis = FIS.load("./res/UrlRelevance.fcl", true);
 		FunctionBlock fb = fis.getFunctionBlock("urlrelevance");
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		System.out.println(occuranceScore);
 		fis.setVariable("occurance", Math.log(occuranceScore));
 		fis.setVariable("depth", depth);
 
