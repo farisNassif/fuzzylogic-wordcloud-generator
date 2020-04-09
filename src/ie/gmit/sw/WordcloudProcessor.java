@@ -37,6 +37,10 @@ public class WordcloudProcessor implements Runnable {
 		/* Start processing */
 		InitializeSearch();
 
+		/* Sort word map highest > lowest */
+		word_freq = MapSort.crunchifySortMap(word_freq);
+
+		System.out.println(word_freq.entrySet());
 		System.out.println("Finished");
 	}
 
@@ -52,18 +56,34 @@ public class WordcloudProcessor implements Runnable {
 
 	/* Generate children from a parent node */
 	private void GenerateChildNodes(Node parent) {
+		int count = 0;
 		Elements children = ConnectNode(parent).select("a");
 
+		/* Score each child, add to prio queue */
 		for (Element child : children) {
 			String link = child.attr("href");
-			if (!closed_list.contains(link) && link.contains("https://")) {
 
+			if (!closed_list.contains(link) && link.contains("https://") && count < wordcloud.brachingFactor) {
+				count++;
+				/* New child, one level deeper than parent */
 				Node childNode = new Node(link, parent.getDepth() + 1);
 
 				ScoreChild(childNode);
 
+				/* Don't want to visit this url again */
 				closed_list.add(link);
 			}
+		}
+
+		/* Poll the queue, generate more children from the best child */
+		if (closed_list.size() < 20 && queue.peek().getDepth() > wordcloud.maxDepth) {
+			System.out.println("**POLLING** URL: " + queue.peek().getUrl() + " Depth: " + queue.peek().getDepth()
+					+ " Score: " + queue.peek().getScore());
+			
+			/* Map words to frequencies for best child */
+			MapWords(queue.peek());
+			/* Remove from queue and go generate more children from the best child node */
+			GenerateChildNodes(queue.poll());
 		}
 	}
 
@@ -85,12 +105,42 @@ public class WordcloudProcessor implements Runnable {
 				+ RelevanceCalculator.UrlRelevance(child, title, headings, paragraph, wordcloud.word) + " Depth: "
 				+ child.getDepth());
 		child.setScore(RelevanceCalculator.UrlRelevance(child, title, headings, paragraph, wordcloud.word));
+
+		queue.offer(child);
+	}
+
+	/* Maps all words on the highest scoring page to frequency */
+	private void MapWords(Node bestChild) {
+		/* Connect to the best child */
+		Document bestChildDoc = ConnectNode(bestChild);
+
+		/* Get the whole text without symbolds or numbers */
+		String wholetext = bestChildDoc.wholeText().replaceAll("[^a-zA-Z]", " ").toLowerCase();
+		String[] words = wholetext.split(" ");
+
+		/* For each word .. */
+		for (String word : words) {
+			try {
+				/* If it's not worthless and irrelevant .. */
+				if ((word.length() > 2) && (!IgnoreWords.ignoreWords().contains(word))) {
+					/* If the word was already mapped */
+					if (word_freq.containsKey(word)) {
+						/* If it was encountered before, increment */
+						word_freq.replace(word, word_freq.get(word), word_freq.get(word) + 1);
+					} else {
+						/* If this was the first time encountering it, put into map */
+						word_freq.put(word, 1);
+					}
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	/* Basically at a low level connects to a URL string, return Doc */
 	private Document ConnectNode(Node node_to_connect_to) {
 		Document doc = null;
-
 		try {
 			doc = Jsoup.connect(node_to_connect_to.getUrl()).get();
 		} catch (IOException e) {

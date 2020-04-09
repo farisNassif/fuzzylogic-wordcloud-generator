@@ -68,6 +68,7 @@ public class WordcloudProcessor implements Runnable {
 
 		Elements children = doc.select("a");
 
+		/* Score each child, add to prio queue */
 		for (Element child : children) {
 			String link = child.attr("href");
 
@@ -82,10 +83,13 @@ public class WordcloudProcessor implements Runnable {
 			}
 		}
 
+		/* Poll the queue, generate more children from the best child */
 		if (closed_list.size() < 10) {
 			System.out.println("**POLLING** URL: " + queue.peek().getUrl() + " Depth: " + queue.peek().getDepth()
 					+ " Score: " + queue.peek().getScore());
+			/* Map words to frequencies for best child */
 			MapWords(queue.peek());
+			/* Remove from queue and go generate more children from the best child node */
 			GenerateChildren(queue.poll());
 		}
 	}
@@ -117,7 +121,6 @@ public class WordcloudProcessor implements Runnable {
 		child.setScore(RelevanceCalculator.UrlRelevance(child, title, headings, paragraph, wordcloud.word));
 
 		queue.offer(child);
-
 
 	}
 
