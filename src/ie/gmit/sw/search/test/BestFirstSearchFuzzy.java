@@ -1,11 +1,10 @@
-package ie.gmit.sw;
+package ie.gmit.sw.search.test;
 
 import net.sourceforge.jFuzzyLogic.FIS;
 import net.sourceforge.jFuzzyLogic.FunctionBlock;
 import net.sourceforge.jFuzzyLogic.rule.Variable;
 
-public class RelevanceCalculator {
-
+public class BestFirstSearchFuzzy {
 	/* Scores the url based on how relevant it is */
 	public static double UrlRelevance(Node child, String titleData, String headingsData, String paragraphData,
 			String query) {
@@ -51,12 +50,12 @@ public class RelevanceCalculator {
 
 		FIS fis = FIS.load("./res/UrlRelevance.fcl", true);
 		FunctionBlock fb = fis.getFunctionBlock("urlrelevance");
-		
+
 		fis.setVariable("occurance", Math.log(occuranceScore));
 		fis.setVariable("depth", depth);
 
 		fis.evaluate();
-		
+
 		Variable relevance = fb.getVariable("relevance");
 		return relevance.getLatestDefuzzifiedValue();
 

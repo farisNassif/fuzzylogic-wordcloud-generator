@@ -1,4 +1,4 @@
-package ie.gmit.sw;
+package ie.gmit.sw.ai.search;
 
 /* Simple node class that defines a child object */
 public final class Node implements Comparable<Node> {

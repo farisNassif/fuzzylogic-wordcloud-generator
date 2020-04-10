@@ -1,4 +1,4 @@
-package ie.gmit.sw;
+package ie.gmit.sw.search.test;
 
 import java.io.IOException;
 import java.util.Comparator;
@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
@@ -14,8 +15,10 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-/* Handles the internal processing of the wordcloud */
-public class WordcloudProcessor implements Runnable {
+import ie.gmit.sw.ai.cloud.WeightedFont;
+import ie.gmit.sw.ai.cloud.WordFrequency;
+
+public class BestFirstSearch implements Runnable {
 	/* Wordcloud object containing query word, branching factor and max depth */
 	private Wordcloud wordcloud;
 	/* Contains URL's that were already visited */
@@ -23,7 +26,7 @@ public class WordcloudProcessor implements Runnable {
 	private Queue<Node> queue = new PriorityQueue<>(Comparator.comparing(Node::getScore).reversed());
 	private Map<String, Integer> word_freq = new ConcurrentHashMap<String, Integer>();
 
-	public WordcloudProcessor(Wordcloud wordcloud) {
+	public BestFirstSearch(Wordcloud wordcloud) {
 		super();
 		this.wordcloud = wordcloud;
 	}
@@ -37,10 +40,14 @@ public class WordcloudProcessor implements Runnable {
 		/* Start processing */
 		InitializeSearch();
 
-		/* Sort word map highest > lowest */
-		word_freq = MapSort.crunchifySortMap(word_freq);
+		/* Generate freq table & sort word map highest > lowest */
+		WordFrequency[] words = new WeightedFont().getFontSizes(GenerateFrequency(MapSort.crunchifySortMap(word_freq)));
 
-		System.out.println(word_freq.entrySet());
+		// Testing words are correct
+		for (int s = 0; s < words.length; s++) {
+
+			System.out.println(words[s]);
+		}
 		System.out.println("Finished");
 	}
 
@@ -76,10 +83,9 @@ public class WordcloudProcessor implements Runnable {
 		}
 
 		/* Poll the queue, generate more children from the best child */
-		if (closed_list.size() < 20 && queue.peek().getDepth() > wordcloud.maxDepth) {
+		if (closed_list.size() < 10 && queue.peek().getDepth() < wordcloud.maxDepth) {
 			System.out.println("**POLLING** URL: " + queue.peek().getUrl() + " Depth: " + queue.peek().getDepth()
 					+ " Score: " + queue.peek().getScore());
-			
 			/* Map words to frequencies for best child */
 			MapWords(queue.peek());
 			/* Remove from queue and go generate more children from the best child node */
@@ -102,9 +108,9 @@ public class WordcloudProcessor implements Runnable {
 		String paragraph = childDoc.select("p").text().replaceAll("[^a-zA-Z]+", " ").toLowerCase();
 
 		System.out.println(child.getUrl() + ": Heuristic Score => "
-				+ RelevanceCalculator.UrlRelevance(child, title, headings, paragraph, wordcloud.word) + " Depth: "
+				+ BestFirstSearchFuzzy.UrlRelevance(child, title, headings, paragraph, wordcloud.word) + " Depth: "
 				+ child.getDepth());
-		child.setScore(RelevanceCalculator.UrlRelevance(child, title, headings, paragraph, wordcloud.word));
+		child.setScore(BestFirstSearchFuzzy.UrlRelevance(child, title, headings, paragraph, wordcloud.word));
 
 		queue.offer(child);
 	}
@@ -136,6 +142,21 @@ public class WordcloudProcessor implements Runnable {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	private WordFrequency[] GenerateFrequency(Map<String, Integer> sortedFrequencyMap) {
+		int count = 0;
+		WordFrequency[] wf = new WordFrequency[32];
+
+		for (Entry<String, Integer> word : sortedFrequencyMap.entrySet()) {
+			if (count >= 32) {
+				break;
+			} else {
+				wf[count] = new WordFrequency(word.getKey(), word.getValue());
+				count++;
+			}
+		}
+		return wf;
 	}
 
 	/* Basically at a low level connects to a URL string, return Doc */

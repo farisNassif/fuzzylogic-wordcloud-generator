@@ -1,4 +1,4 @@
-package ie.gmit.sw;
+package ie.gmit.sw.search.test;
 
 /* Generic word cloud object defining key values */
 public class Wordcloud {
