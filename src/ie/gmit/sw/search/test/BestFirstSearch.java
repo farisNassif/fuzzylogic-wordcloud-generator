@@ -70,7 +70,7 @@ public class BestFirstSearch implements Runnable {
 		for (Element child : children) {
 			String link = child.attr("href");
 
-			if (!closed_list.contains(link) && link.contains("https://") && count < wordcloud.brachingFactor) {
+			if (!closed_list.contains(link) && link.contains("https://") && count < wordcloud.brachingFactor && !link.contains("pdf")) {
 				count++;
 				/* New child, one level deeper than parent */
 				Node childNode = new Node(link, parent.getDepth() + 1);
@@ -81,16 +81,7 @@ public class BestFirstSearch implements Runnable {
 				closed_list.add(link);
 			}
 		}
-
-		/* Poll the queue, generate more children from the best child */
-		if (closed_list.size() < 10 && queue.peek().getDepth() < wordcloud.maxDepth) {
-			System.out.println("**POLLING** URL: " + queue.peek().getUrl() + " Depth: " + queue.peek().getDepth()
-					+ " Score: " + queue.peek().getScore());
-			/* Map words to frequencies for best child */
-			MapWords(queue.peek());
-			/* Remove from queue and go generate more children from the best child node */
-			GenerateChildNodes(queue.poll());
-		}
+		RecursivelyCall();
 	}
 
 	/* Take a child node, score it */
@@ -144,6 +135,7 @@ public class BestFirstSearch implements Runnable {
 		}
 	}
 
+	/* Generate the frequency map */
 	private WordFrequency[] GenerateFrequency(Map<String, Integer> sortedFrequencyMap) {
 		int count = 0;
 		WordFrequency[] wf = new WordFrequency[32];
@@ -159,6 +151,19 @@ public class BestFirstSearch implements Runnable {
 		return wf;
 	}
 
+	/* Could have this in the method, bit cleaner seperating it */
+	private void RecursivelyCall() {
+		/* Poll the queue, generate more children from the best child */
+		if (closed_list.size() < 35 && queue.peek().getDepth() < wordcloud.maxDepth) {
+			System.out.println("**POLLING** URL: " + queue.peek().getUrl() + " Depth: " + queue.peek().getDepth()
+					+ " Score: " + queue.peek().getScore());
+			/* Map words to frequencies for best child */
+			MapWords(queue.peek());
+			/* Remove from queue and go generate more children from the best child node */
+			GenerateChildNodes(queue.poll());
+		}
+	}	
+	
 	/* Basically at a low level connects to a URL string, return Doc */
 	private Document ConnectNode(Node node_to_connect_to) {
 		Document doc = null;
