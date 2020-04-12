@@ -1,4 +1,4 @@
-package ie.gmit.sw.ai.search;
+package temp;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -8,8 +8,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-
-import ie.gmit.sw.ServiceHandler;
 
 public class IgnoreWords {
 	public static Collection<String> ignoreWords() throws IOException {
