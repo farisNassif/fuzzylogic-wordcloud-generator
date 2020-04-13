@@ -1,4 +1,4 @@
-package ie.gmit.sw.ai.search;
+package local;
 
 import ie.gmit.sw.ai.cloud.WordFrequency;
 

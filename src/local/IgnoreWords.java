@@ -1,4 +1,4 @@
-package ie.gmit.sw.ai.search;
+package local;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -16,7 +16,6 @@ public class IgnoreWords {
 		Set<String> ignoreWords = new HashSet<String>();
 
 		try {
-			// BufferedReader in = new BufferedReader(new FileReader(ServiceHandler.f.getAbsolutePath()));
 			BufferedReader in = new BufferedReader(new FileReader("ignorewords.txt"));
 
 			String line;
@@ -34,7 +33,6 @@ public class IgnoreWords {
 
 	/* When generating freq table, need to ignore actual query word + plural */
 	public static void ignoreQuery(String query) {
-		// String filename = ServiceHandler.f.getAbsolutePath();
 		String filename = "ignorewords.txt";
 		FileWriter fw = null;
 		try {

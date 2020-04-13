@@ -1,4 +1,4 @@
-package ie.gmit.sw.ai.search;
+package local;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -11,14 +11,11 @@ public class Run {
 	public static void main(String[] args) throws InterruptedException, ExecutionException {
 		int wcloudSize = 20;
 		ExecutorService pool = Executors.newFixedThreadPool(5);
-		WordcloudProcessor wordcloudProcessor = new WordcloudProcessor(new Wordcloud("book", wcloudSize), 1, 5, 3);
+		WordcloudProcessor wordcloudProcessor = new WordcloudProcessor(new Wordcloud("software", wcloudSize), 1, 3, 3);
 
 		CompletableFuture<WordFrequency[]> future = CompletableFuture
 				.supplyAsync(() -> wordcloudProcessor.process(), pool);
 
-		for (WordFrequency word :future.get())
-		{
-			System.out.println(word);
-		}
+		System.out.println(future.get().length);
 	}
 }

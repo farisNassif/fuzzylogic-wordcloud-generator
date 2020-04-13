@@ -1,5 +1,6 @@
-package ie.gmit.sw.ai.search;
+package legacy;
 
+import ie.gmit.sw.ServiceHandler;
 import net.sourceforge.jFuzzyLogic.FIS;
 import net.sourceforge.jFuzzyLogic.FunctionBlock;
 import net.sourceforge.jFuzzyLogic.rule.Variable;
@@ -48,6 +49,7 @@ public class BestFirstSearchFuzzy {
 			}
 		}
 
+		// FIS fis = FIS.load(ServiceHandler.fuz.getAbsolutePath(), true);
 		FIS fis = FIS.load("res/UrlRelevance.fcl", true);
 		FunctionBlock fb = fis.getFunctionBlock("urlrelevance");
 

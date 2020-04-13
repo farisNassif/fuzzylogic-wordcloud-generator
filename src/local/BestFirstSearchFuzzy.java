@@ -1,4 +1,4 @@
-package ie.gmit.sw.ai.search;
+package local;
 
 import net.sourceforge.jFuzzyLogic.FIS;
 import net.sourceforge.jFuzzyLogic.FunctionBlock;

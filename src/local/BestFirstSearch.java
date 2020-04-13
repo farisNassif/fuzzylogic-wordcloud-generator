@@ -1,4 +1,4 @@
-package ie.gmit.sw.ai.search;
+package local;
 
 import java.io.IOException;
 import java.util.Comparator;
@@ -94,7 +94,7 @@ public class BestFirstSearch extends Search {
 		}
 
 		/* Poll the queue, generate more children from the best child */
-		if (closed_list.size() < (branchingFactor * maxDepth + 1) && queue.peek().getDepth() < maxDepth) {
+		if (closed_list.size() < 10 && queue.peek().getDepth() < maxDepth) {
 			System.out.println("**POLLING** URL: " + queue.peek().getUrl() + " Depth: " + queue.peek().getDepth()
 					+ " Score: " + queue.peek().getScore());
 			/* Map words to frequencies for best child */

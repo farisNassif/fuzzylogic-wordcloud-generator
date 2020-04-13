@@ -46,9 +46,12 @@ public class ServiceHandler extends HttpServlet {
 		ExecutorService pool = Executors.newFixedThreadPool(4);
 
 		/* Retrieve the user options */
-		String option = req.getParameter("cmbOptions");
+		String searchOption = req.getParameter("cmbOptions");
 		String query = req.getParameter("query");
-
+		int wcloudSize = 20;
+		int branchingFactor = 3;
+		int maxDepth = 3;
+		
 		out.print("<html><head><title>Artificial Intelligence Assignment</title>");
 		out.print("<link rel=\"stylesheet\" href=\"includes/style.css\">");
 
@@ -62,15 +65,15 @@ public class ServiceHandler extends HttpServlet {
 		out.print("<p>The &quot;fuzzy&quot; file is located at <font color=red><b>" + fuz.getAbsolutePath()
 				+ "</b></font> and is <b><u>" + fuz.length() + "</u></b> bytes in size.");
 		out.print("<p><fieldset><legend><h3>Result</h3></legend>");
-
+		
 		/* Process the wordcloud */
-		WordcloudProcessor wordcloudProcessor = new WordcloudProcessor(new Wordcloud(query, 3, 3), 1);
+		WordcloudProcessor wordcloudProcessor = new WordcloudProcessor(new Wordcloud(query, wcloudSize), 1, branchingFactor, maxDepth);
 
 		/* Declare future */
 		CompletableFuture<WordFrequency[]> future = CompletableFuture.supplyAsync(() -> wordcloudProcessor.process(),
 				pool);
 
-		/* Return the top 32 words from future call */
+		/* Return the top x words from future call */
 		WordFrequency[] words = null;
 		try {
 			words = future.get();
@@ -93,7 +96,7 @@ public class ServiceHandler extends HttpServlet {
 		out.print("</fieldset>");
 		/* Print some stats */
 		out.print("<p>Generating word cloud from query: <b>" + query + "</b></p>");
-		out.print("<p>Search Algorithm: <b>" + option + "</b></p>");
+		out.print("<p>Search Algorithm: <b>" + searchOption + "</b></p>");
 		out.print("<a href=\"./\">Return to Start Page</a>");
 		out.print("</body>");
 		out.print("</html>");

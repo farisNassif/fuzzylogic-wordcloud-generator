@@ -1,4 +1,4 @@
-package ie.gmit.sw.ai.search;
+package legacy;
 
 import java.io.IOException;
 import java.util.Comparator;
@@ -22,8 +22,6 @@ import ie.gmit.sw.ai.cloud.WordFrequency;
 public class BestFirstSearch extends Search {
 	/* Wordcloud object containing query word, branching factor and max depth */
 	private Wordcloud wordcloud;
-	private int branchingFactor;
-	private int maxDepth;
 	/* Contains URL's that were already visited */
 	private Set<String> closed_list = new ConcurrentSkipListSet<>();
 	/* Prio queue, polled after each branch, sorted highest > lowest */
@@ -31,10 +29,8 @@ public class BestFirstSearch extends Search {
 	/* Maps each polled node's words to their frequencies */
 	private Map<String, Integer> word_freq = new ConcurrentHashMap<String, Integer>();
 
-	public BestFirstSearch(Wordcloud wordcloud, int branchingFactor, int maxDepth) {
+	public BestFirstSearch(Wordcloud wordcloud) {
 		this.wordcloud = wordcloud;
-		this.branchingFactor = branchingFactor;
-		this.maxDepth = maxDepth;
 	}
 
 	public WordFrequency[] ExecuteSearch() {
@@ -55,7 +51,7 @@ public class BestFirstSearch extends Search {
 		IgnoreWords.ignoreQuery(wordcloud.word);
 
 		/* Construct the initial node */
-		String queryUrl = "https://duckduckgo.com/html/?q=" + wordcloud.word;
+		String queryUrl = "https://duckduckgo.com/html/?q=" + wordcloud.word.toLowerCase();
 
 		Node initial = new Node(queryUrl, 0);
 
@@ -70,7 +66,7 @@ public class BestFirstSearch extends Search {
 	private void GenerateChildNodes(Node parent) throws Throwable {
 		int count = 0;
 		Elements children = null;
-
+		
 		try {
 			children = ConnectNode(parent).select("a");
 		} catch (IOException e) {
@@ -81,7 +77,7 @@ public class BestFirstSearch extends Search {
 		for (Element child : children) {
 			String link = child.attr("href");
 
-			if (!closed_list.contains(link) && link.contains("https://") && count < branchingFactor) {
+			if (!closed_list.contains(link) && link.contains("https://") && count < wordcloud.brachingFactor) {
 				count++;
 				/* New child, one level deeper than parent */
 				Node childNode = new Node(link, parent.getDepth() + 1);
@@ -94,7 +90,7 @@ public class BestFirstSearch extends Search {
 		}
 
 		/* Poll the queue, generate more children from the best child */
-		if (closed_list.size() < (branchingFactor * maxDepth + 1) && queue.peek().getDepth() < maxDepth) {
+		if (closed_list.size() < 10 && queue.peek().getDepth() < wordcloud.maxDepth) {
 			System.out.println("**POLLING** URL: " + queue.peek().getUrl() + " Depth: " + queue.peek().getDepth()
 					+ " Score: " + queue.peek().getScore());
 			/* Map words to frequencies for best child */
@@ -108,7 +104,7 @@ public class BestFirstSearch extends Search {
 	private void ScoreChild(Node child) throws Throwable {
 		/* Connect to child URL */
 		Document childDoc = null;
-
+		
 		try {
 			childDoc = ConnectNode(child);
 		} catch (IOException e) {
@@ -127,7 +123,7 @@ public class BestFirstSearch extends Search {
 		System.out.println(child.getUrl() + ": Heuristic Score => "
 				+ BestFirstSearchFuzzy.UrlRelevance(child, title, headings, paragraph, wordcloud.word) + " Depth: "
 				+ child.getDepth());
-		child.setScore(BestFirstSearchFuzzy.UrlRelevance(child, title, headings, paragraph, wordcloud.word));
+		child.setScore(BestFirstSearchFuzzy.UrlRelevance(child, title, headings, paragraph, wordcloud.word.toLowerCase()));
 
 		queue.offer(child);
 	}
@@ -136,7 +132,7 @@ public class BestFirstSearch extends Search {
 	private void MapWords(Node bestChild) throws Throwable {
 		/* Connect to the best child */
 		Document bestChildDoc = null;
-
+		
 		try {
 			bestChildDoc = ConnectNode(bestChild);
 		} catch (IOException e1) {
@@ -170,10 +166,10 @@ public class BestFirstSearch extends Search {
 	/* Generate frequency table and return it to service handler */
 	private WordFrequency[] GenerateFrequency(Map<String, Integer> sortedFrequencyMap) {
 		int count = 0;
-		WordFrequency[] wf = new WordFrequency[wordcloud.maxWords];
+		WordFrequency[] wf = new WordFrequency[32];
 
 		for (Entry<String, Integer> word : sortedFrequencyMap.entrySet()) {
-			if (count >= wordcloud.maxWords) {
+			if (count >= 32) {
 				break;
 			} else {
 				wf[count] = new WordFrequency(word.getKey(), word.getValue());
