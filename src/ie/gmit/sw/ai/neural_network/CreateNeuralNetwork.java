@@ -19,6 +19,7 @@ public class CreateNeuralNetwork {
 	 * CreateNeuralNetwork().createNN(); }
 	 */
 
+	@SuppressWarnings("unused")
 	private void createNN() throws Exception {
 		String filename = "res/NeuralNetwork";
 		double[] test = { 0.1, 0, 0, 0, 0.4, 0.3, 0.2, 0 };
@@ -78,10 +79,10 @@ public class CreateNeuralNetwork {
 	 * Below are arrays for training, should probably have read them in from a file
 	 * to make it cleaner, it's a bit dirty like this but works.
 	 * 
-	 * Each training data array corresponds to an expected output array, I did 5
-	 * for each of the 8 categories and generated the training data arrays from a
-	 * for loop. It's fairly accurate at 5 training arrays per category, might add
-	 * more if performance dips.
+	 * Each training data array corresponds to an expected output array, I did 5 for
+	 * each of the 8 categories and generated the training data arrays from a for
+	 * loop. It's fairly accurate at 5 training arrays per category, might add more
+	 * if performance dips.
 	 */
 	private double[][] trainingData = {
 			// 1

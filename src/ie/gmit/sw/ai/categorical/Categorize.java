@@ -6,10 +6,12 @@ import ie.gmit.sw.ai.neural_network.NeuralNetwork;
 import ie.gmit.sw.ai.search.MapSort;
 
 public class Categorize {
+	public static String category;
+
 	public static void findCategory(Map<String, Integer> frequencies) {
 
 		/* Used to normalize data before entry into NN */
-		int normalizer = 3;
+		final int NORMALIZER = 3;
 		/* Frequency values returned from search */
 		Map<String, Integer> sort_freq = MapSort.crunchifySortMap(frequencies);
 		/* For use of local NN */
@@ -44,12 +46,13 @@ public class Categorize {
 		double total = location + food + person + technology + movie + book + animal + music;
 
 		/* Preparing squished data for neural network */
-		double[] result = { (scale(location, 1, total) * normalizer), (scale(food, 1, total) * normalizer),
-				(scale(person, 1, total) * normalizer), (scale(technology, 1, total) * normalizer),
-				(scale(movie, 1, total) * normalizer), (scale(book, 1, total) * normalizer),
-				(scale(animal, 1, total) * normalizer), (scale(music, 1, total) * normalizer) };
+		double[] result = { (scale(location, 1, total) * NORMALIZER), (scale(food, 1, total) * NORMALIZER),
+				(scale(person, 1, total) * NORMALIZER), (scale(technology, 1, total) * NORMALIZER),
+				(scale(movie, 1, total) * NORMALIZER), (scale(book, 1, total) * NORMALIZER),
+				(scale(animal, 1, total) * NORMALIZER), (scale(music, 1, total) * NORMALIZER) };
 
-		System.out.println("NN Result: " + NN.Process(result));
+		/* Get the category with the result returned from NN */
+		category = Categories.CategoryMap().get(NN.Process(result));
 	}
 
 	/* Will scale all category results so they represent a value between 0 - 1 */

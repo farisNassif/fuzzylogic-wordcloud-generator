@@ -49,6 +49,7 @@ public class BestFirstSearch extends Search {
 		/* Generate freq table & sort word map highest > lowest */
 		WordFrequency[] words = new WeightedFont().getFontSizes(GenerateFrequency(MapSort.crunchifySortMap(word_freq)));
 
+		/* Before return with frequency array, categorize the query word */
 		Categorize.findCategory(word_freq);
 
 		return words;

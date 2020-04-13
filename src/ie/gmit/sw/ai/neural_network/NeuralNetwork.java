@@ -6,7 +6,6 @@ import org.encog.neural.networks.BasicNetwork;
 public class NeuralNetwork {
 
 	public NeuralNetwork() {
-
 	}
 
 	public int Process(double[] input) {
