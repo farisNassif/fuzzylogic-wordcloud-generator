@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,10 +14,11 @@ import ie.gmit.sw.ServiceHandler;
 
 public class IgnoreWords {
 	public static Collection<String> ignoreWords() throws IOException {
-		Set<String> ignoreWords = new HashSet<String>();
+		Set<String> ignoreWords = Collections.synchronizedSet(new HashSet<String>());
 
 		try {
-			// BufferedReader in = new BufferedReader(new FileReader(ServiceHandler.f.getAbsolutePath()));
+			// BufferedReader in = new BufferedReader(new
+			// FileReader(ServiceHandler.f.getAbsolutePath()));
 			BufferedReader in = new BufferedReader(new FileReader("res/ignorewords.txt"));
 
 			String line;

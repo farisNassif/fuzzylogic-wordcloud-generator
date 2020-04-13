@@ -15,6 +15,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import ie.gmit.sw.ai.categorical.Categorize;
 import ie.gmit.sw.ai.cloud.WeightedFont;
 import ie.gmit.sw.ai.cloud.WordFrequency;
 
@@ -47,6 +48,9 @@ public class BestFirstSearch extends Search {
 
 		/* Generate freq table & sort word map highest > lowest */
 		WordFrequency[] words = new WeightedFont().getFontSizes(GenerateFrequency(MapSort.crunchifySortMap(word_freq)));
+
+		Categorize.findCategory(word_freq);
+
 		return words;
 	}
 
@@ -143,7 +147,7 @@ public class BestFirstSearch extends Search {
 			e1.printStackTrace();
 		}
 
-		/* Get the whole text without symbolds or numbers */
+		/* Get the whole text without symbold or numbers */
 		String wholetext = bestChildDoc.wholeText().replaceAll("[^a-zA-Z]", " ").toLowerCase();
 		String[] words = wholetext.split(" ");
 
@@ -184,10 +188,10 @@ public class BestFirstSearch extends Search {
 	}
 
 	/* Basically at a low level connects to a URL string, return Doc */
-	private Document ConnectNode(Node node_to_connect_to) throws Throwable {
+	private Document ConnectNode(Node child_to_connect_to) throws Throwable {
 		Document doc = null;
 		try {
-			doc = Jsoup.connect(node_to_connect_to.getUrl()).userAgent(
+			doc = Jsoup.connect(child_to_connect_to.getUrl()).userAgent(
 					"Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36")
 					.referrer("http://www.google.com").execute().parse();
 		} catch (IOException e) {
