@@ -4,204 +4,83 @@ import encog.activator.Activator;
 
 public class ZooRunner {
 	public ZooRunner() throws Exception {
-		NeuralNetwork nn = new NeuralNetwork(Activator.ActivationFunction.Sigmoid, 16, 2, 7);
+		NeuralNetwork nn = new NeuralNetwork(Activator.ActivationFunction.Sigmoid, 24, 6, 8);
 		BackpropagationTrainer trainer = new BackpropagationTrainer(nn);
-		trainer.train(data, expected, 0.6, 2000);
-		double[] test = { 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0.25, 0, 0, 0 };
+		trainer.train(data, expected, 0.05, 8000);
+		double[] test = { 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0 };
 		double[] result = nn.process(test);
+
 		for (int i = 0; i < result.length; i++) {
 			System.out.println(result[i]);
 		}
 		System.out.println(Utils.getMaxIndex(result) + 1);
 	}
 
-	/* 
-	 * 	 1. Location        Boolean
-	 *   2. Food            Boolean
-	 *   3. Person          Boolean
-	 *   4. Technology      Boolean
-	 *   5. Movie           Boolean
-	 *   6. Book            Boolean
-	 *   7. Animal          Boolean
-	 *   8. Music 			Bookean
-	 */
 	public static void main(String[] args) throws Exception {
 		new ZooRunner();
 	}
+	
 	/*
-	 * 	------------------------------------------------------------------------
-	 * 	B.Sc. (Hons) in Software Development - Artificial Intelligence
-	 * 	------------------------------------------------------------------------
-	 *  
-	 *  Data set for the Neural Network Zoo Animal Classifier Lab
 	 * 
+     *    Set of categories:
+     *    =====================================================================
+   	 *    1. Location        Boolean
+     *    2. Food            Boolean
+     *    3. Person          Boolean
+     *    4. Technology      Boolean
+     *    5. Movie           Boolean
+     *    6. Book            Boolean
+     *    7. Animal          Boolean
+     *    8. Music 			 Boolean
 	 * 
-	 * 1. Title: Zoo database
+	 * The user's query word will be classified into one of the following categories
+	 * The three words below each category are the words most associated with that category
+	 * If one of those three words are located within a relevant url's contents, it would suggest 
+	 * the query word would be related to the corresponding category
 	 * 
-	 * 2. Source Information
-	 *    -- Creator: Richard Forsyth
-	 *    -- Donor: Richard S. Forsyth 
-	 *              8 Grosvenor Avenue
-	 *              Mapperley Park
-	 *              Nottingham NG3 5DX
-	 *              0602-621676
-	 *   -- Date: 5/15/1990
-	 *  
-	 * 3. Past Usage:
-	 *    -- None known other than what is shown in Forsyth's PC/BEAGLE User's Guide.
-	 * 
-	 * 4. Relevant Information:
-	 *   -- A simple database containing 17 Boolean-valued attributes.  The "type"
-	 *      attribute appears to be the class attribute.  Here is a breakdown of
-	 *       which animals are in which type: (I find it unusual that there are
-	 *       2 instances of "frog" and one of "girl"!)
-	 * 
-	 *       Class# Set of animals:
-	 *       ====== ===============================================================
-	 *            1 (41) aardvark, antelope, bear, boar, buffalo, calf,
-	 *                   cavy, cheetah, deer, dolphin, elephant,
-	 *                   fruitbat, giraffe, girl, goat, gorilla, hamster,
-	 *                   hare, leopard, lion, lynx, mink, mole, mongoose,
-	 *                   opossum, oryx, platypus, polecat, pony,
-	 *                   porpoise, puma, pussycat, raccoon, reindeer,
-	 *                   seal, sealion, squirrel, vampire, vole, wallaby,wolf
-	 *            2 (20) chicken, crow, dove, duck, flamingo, gull, hawk,
-	 *                   kiwi, lark, ostrich, parakeet, penguin, pheasant,
-	 *                   rhea, skimmer, skua, sparrow, swan, vulture, wren
-	 *            3 (5)  pitviper, seasnake, slowworm, tortoise, tuatara 
-	 *            4 (13) bass, carp, catfish, chub, dogfish, haddock,
-	 *                   herring, pike, piranha, seahorse, sole, stingray, tuna
-	 *            5 (4)  frog, frog, newt, toad 
-	 *            6 (8)  flea, gnat, honeybee, housefly, ladybird, moth, termite, wasp
-	 *            7 (10) clam, crab, crayfish, lobster, octopus,
-	 *                  scorpion, seawasp, slug, starfish, worm
-	 * 
-	 * 5. Number of Instances: 101
-	 * 
-	 * 6. Number of Attributes: 18 (animal name, 15 Boolean attributes, 2 numerics)
-	 * { 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0.25, 0, 0, 0 };
-	 * 7. Attribute Information: (name of attribute and type of value domain)
-	 *    1. animal name:  Unique for each instance
-	 *    2. hair			Boolean
-	 *    3. feathers		Boolean
-	 *    4. eggs			Boolean
-	 *    5. milk			Boolean
-	 *    6. airborne		Boolean
-	 *    7. aquatic		Boolean
-	 *    8. predator		Boolean
-	 *    9. toothed		Boolean
-	 *   10. backbone		Boolean
-	 *   11. breathes		Boolean
-	 *   12. venomous		Boolean
-	 *   13. fins			Boolean
-	 *   14. legs			Numeric (set of values: {0,2,4,5,6,8})
-	 *   15. tail			Boolean
-	 *   16. domestic		Boolean
-	 *   17. catsize		Boolean
-	 *   18. type			Numeric (integer values in range [1,7])
-	 * 
-	 *   1. Location        Boolean
-	 *   2. Food            Boolean
-	 *   3. Person          Boolean
-	 *   4. Technology      Boolean
-	 *   5. Movie           Boolean
-	 *   6. Book            Boolean
-	 *   7. Animal          Boolean
-	 *   8. Building        Boolean
-	 *   9. Other           Boolean
-	 *   
-	 * 8. Missing Attribute Values: None
-	 * 
-	 * 9. Class Distribution: Given above
-	 * 
-	 * á 
+	 *    		** Location ** 
+	 *    1. Longitude		Boolean
+	 *    2. Area     		Boolean
+	 *    3. Place			Boolean
+	 *    		** Food ** 
+	 *    4. Health 		Boolean
+	 *    5. Cooking     	Boolean
+	 *    6. Nutrition		Boolean
+	 *    		** Person ** 
+	 *    7. Human			Boolean
+	 *    8. Identity   	Boolean
+	 *    9. Self			Boolean
+	 *    		** Technology ** 
+	 *   10. Science		Boolean
+	 *   11. Engineeiring   Boolean
+	 *   12. History		Boolean
+	 *    		** Movie ** 
+	 *   13. Watch 			Boolean
+	 *   14. Marvel    		Boolean
+	 *   15. Show			Boolean
+	 *    		** Book ** 
+	 *   16. Paper			Boolean
+	 *   17. Print     		Boolean
+	 *   18. Library		Boolean
+	 *    		** Animal ** 
+	 *   19. Planet			Boolean
+	 *   20. Species    	Boolean
+	 *   21. Biology		Boolean
+	 *    	    ** Music ** 
+	 *   22. Album			Boolean
+	 *   23. Rock     		Boolean
+	 *   24. Jazz			Boolean
 	 */
+	
+	private double[][] data = { { 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0 },
+			{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1 } };
 
-	private double[][] data = { { 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0.5, 0, 0, 1 },
-			{ 1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0.5, 1, 0, 1 }, { 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0 },
-			{ 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0.5, 0, 0, 1 }, { 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0.5, 1, 0, 1 },
-			{ 1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0.5, 1, 0, 1 }, { 1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0.5, 1, 1, 1 },
-			{ 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0 }, { 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0 },
-			{ 1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0.5, 0, 1, 0 }, { 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0.5, 1, 0, 1 },
-			{ 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0.25, 1, 1, 0 }, { 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0 },
-			{ 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, { 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0.5, 0, 0, 0 },
-			{ 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0.75, 0, 0, 0 },
-			{ 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0.25, 1, 0, 0 }, { 1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0.5, 1, 0, 1 },
-			{ 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 1 }, { 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1 },
-			{ 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0.25, 1, 1, 0 },
-			{ 0, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0.25, 1, 0, 0 }, { 1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0.5, 1, 0, 1 },
-			{ 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0.25, 1, 0, 1 },
-			{ 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0.75, 0, 0, 0 }, { 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0.5, 0, 0, 0 },
-			{ 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0.5, 0, 0, 0 }, { 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0.25, 1, 0, 0 },
-			{ 1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0.5, 1, 0, 1 }, { 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0.25, 0, 1, 1 },
-			{ 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0.75, 0, 0, 0 }, { 1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0.5, 1, 1, 1 },
-			{ 1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0.25, 0, 0, 1 },
-			{ 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0.25, 1, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0 },
-			{ 1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0.5, 1, 1, 0 }, { 1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0.5, 1, 0, 0 },
-			{ 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0.25, 1, 0, 0 }, { 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0 },
-			{ 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0.75, 0, 1, 0 },
-			{ 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0.75, 0, 0, 0 },
-			{ 0, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0.25, 1, 0, 0 },
-			{ 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0.75, 0, 0, 0 },
-			{ 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0.25, 1, 0, 0 }, { 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0.5, 1, 0, 1 },
-			{ 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0.5, 1, 0, 1 }, { 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0.75, 0, 0, 0 },
-			{ 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0.5, 1, 0, 1 }, { 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0.5, 1, 0, 1 },
-			{ 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0.5, 1, 0, 0 }, { 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0.5, 1, 0, 1 },
-			{ 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0.75, 0, 0, 0 }, { 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0.5, 1, 0, 0 },
-			{ 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1 }, { 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0.5, 1, 0, 0 },
-			{ 1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0.5, 1, 0, 1 }, { 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0.25, 1, 0, 1 },
-			{ 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0.25, 1, 1, 0 },
-			{ 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0.25, 1, 0, 1 },
-			{ 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0.25, 1, 0, 0 }, { 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 1 },
-			{ 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0 }, { 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0 },
-			{ 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 0, 0.5, 1, 0, 1 }, { 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0.5, 1, 0, 1 },
-			{ 1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0.5, 1, 1, 1 }, { 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1 },
-			{ 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0.5, 1, 0, 1 }, { 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0.5, 1, 1, 1 },
-			{ 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0.5, 1, 0, 1 }, { 1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0.5, 1, 1, 1 },
-			{ 0, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0.25, 1, 0, 1 }, { 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0 },
-			{ 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0 }, { 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 1 },
-			{ 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0.25, 1, 0, 1 }, { 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0 },
-			{ 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0 }, { 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0.25, 1, 0, 0 },
-			{ 0, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0.25, 1, 0, 0 }, { 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0 },
-			{ 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0 },
-			{ 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0.25, 1, 0, 0 },
-			{ 1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0.25, 1, 0, 0 },
-			{ 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0.625, 0, 0, 0 }, { 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1 },
-			{ 0, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0.25, 1, 0, 1 },
-			{ 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0.75, 0, 0, 0 }, { 0, 0, 1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0.5, 0, 0, 0 },
-			{ 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0.5, 1, 0, 1 }, { 0, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0.5, 1, 0, 0 },
-			{ 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1, 0, 1 }, { 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0.25, 1, 0, 0 },
-			{ 1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0.5, 1, 0, 0 }, { 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0.25, 1, 0, 1 },
-			{ 1, 0, 0, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0.25, 1, 0, 1 },
-			{ 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0.75, 0, 0, 0 }, { 1, 0, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0.5, 1, 0, 1 },
-			{ 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0 }, { 0, 1, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 0.25, 1, 0, 0 } 
-	};
-
-	private double[][] expected = { { 1, 0, 0, 0, 0, 0, 0 }, { 1, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 1, 0, 0, 0 },
-			{ 1, 0, 0, 0, 0, 0, 0 }, { 1, 0, 0, 0, 0, 0, 0 }, { 1, 0, 0, 0, 0, 0, 0 }, { 1, 0, 0, 0, 0, 0, 0 },
-			{ 0, 0, 0, 1, 0, 0, 0 }, { 0, 0, 0, 1, 0, 0, 0 }, { 1, 0, 0, 0, 0, 0, 0 }, { 1, 0, 0, 0, 0, 0, 0 },
-			{ 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 0, 1, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 1 }, { 0, 0, 0, 0, 0, 0, 1 },
-			{ 0, 0, 0, 0, 0, 0, 1 }, { 0, 1, 0, 0, 0, 0, 0 }, { 1, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 1, 0, 0, 0 },
-			{ 1, 0, 0, 0, 0, 0, 0 }, { 0, 1, 0, 0, 0, 0, 0 }, { 0, 1, 0, 0, 0, 0, 0 }, { 1, 0, 0, 0, 0, 0, 0 },
-			{ 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 1, 0 }, { 0, 0, 0, 0, 1, 0, 0 }, { 0, 0, 0, 0, 1, 0, 0 },
-			{ 1, 0, 0, 0, 0, 0, 0 }, { 1, 0, 0, 0, 0, 0, 0 }, { 1, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 1, 0 },
-			{ 1, 0, 0, 0, 0, 0, 0 }, { 1, 0, 0, 0, 0, 0, 0 }, { 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 0, 1, 0, 0, 0 },
-			{ 1, 0, 0, 0, 0, 0, 0 }, { 1, 0, 0, 0, 0, 0, 0 }, { 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 0, 1, 0, 0, 0 },
-			{ 0, 0, 0, 0, 0, 1, 0 }, { 0, 0, 0, 0, 0, 1, 0 }, { 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 1, 0 },
-			{ 0, 1, 0, 0, 0, 0, 0 }, { 1, 0, 0, 0, 0, 0, 0 }, { 1, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 1 },
-			{ 1, 0, 0, 0, 0, 0, 0 }, { 1, 0, 0, 0, 0, 0, 0 }, { 1, 0, 0, 0, 0, 0, 0 }, { 1, 0, 0, 0, 0, 0, 0 },
-			{ 0, 0, 0, 0, 0, 1, 0 }, { 0, 0, 0, 0, 1, 0, 0 }, { 0, 0, 0, 0, 0, 0, 1 }, { 1, 0, 0, 0, 0, 0, 0 },			
-			{ 1, 0, 0, 0, 0, 0, 0 }, { 0, 1, 0, 0, 0, 0, 0 }, { 0, 1, 0, 0, 0, 0, 0 }, { 0, 1, 0, 0, 0, 0, 0 },
-			{ 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 0, 1, 0, 0, 0 }, { 0, 0, 0, 1, 0, 0, 0 }, { 0, 0, 1, 0, 0, 0, 0 },		
-			{ 1, 0, 0, 0, 0, 0, 0 }, { 1, 0, 0, 0, 0, 0, 0 }, { 1, 0, 0, 0, 0, 0, 0 }, { 1, 0, 0, 0, 0, 0, 0 },
-			{ 1, 0, 0, 0, 0, 0, 0 }, { 1, 0, 0, 0, 0, 0, 0 }, { 1, 0, 0, 0, 0, 0, 0 }, { 1, 0, 0, 0, 0, 0, 0 },			
-			{ 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 1 }, { 0, 0, 0, 1, 0, 0, 0 }, { 1, 0, 0, 0, 0, 0, 0 },
-			{ 1, 0, 0, 0, 0, 0, 0 }, { 0, 0, 1, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 1 }, { 0, 1, 0, 0, 0, 0, 0 },
-			{ 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 1, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 1 }, { 0, 0, 0, 1, 0, 0, 0 },
-			{ 0, 1, 0, 0, 0, 0, 0 }, { 1, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 0, 1 }, { 0, 0, 0, 1, 0, 0, 0 },			
-			{ 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 1, 0 }, { 0, 0, 0, 0, 1, 0, 0 }, { 0, 0, 1, 0, 0, 0, 0 },
-			{ 0, 0, 1, 0, 0, 0, 0 }, { 0, 0, 0, 1, 0, 0, 0 }, { 1, 0, 0, 0, 0, 0, 0 }, { 1, 0, 0, 0, 0, 0, 0 },
-			{ 0, 1, 0, 0, 0, 0, 0 }, { 1, 0, 0, 0, 0, 0, 0 }, { 0, 0, 0, 0, 0, 1, 0 }, { 1, 0, 0, 0, 0, 0, 0 },
-			{ 0, 0, 0, 0, 0, 0, 1 }, { 0, 1, 0, 0, 0, 0, 0 } 
-	};	
+	private double[][] expected = { { 1, 0, 0, 0, 0, 0, 0, 0 }, { 0, 1, 0, 0, 0, 0, 0, 0 }, { 0, 0, 1, 0, 0, 0, 0, 0 }, { 0, 0, 0, 1, 0, 0, 0, 0 },
+			{ 0, 0, 0, 0, 1, 0, 0, 0 }, { 0, 0, 0, 0, 0, 1, 0, 0 }, { 0, 0, 0, 0, 0, 0, 1, 0 }, { 0, 0, 0, 0, 0, 0, 0, 1 } };
 }

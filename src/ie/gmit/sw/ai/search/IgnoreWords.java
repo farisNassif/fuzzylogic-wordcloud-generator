@@ -17,7 +17,7 @@ public class IgnoreWords {
 
 		try {
 			// BufferedReader in = new BufferedReader(new FileReader(ServiceHandler.f.getAbsolutePath()));
-			BufferedReader in = new BufferedReader(new FileReader("ignorewords.txt"));
+			BufferedReader in = new BufferedReader(new FileReader("res/ignorewords.txt"));
 
 			String line;
 			while ((line = in.readLine()) != null) {
@@ -35,7 +35,7 @@ public class IgnoreWords {
 	/* When generating freq table, need to ignore actual query word + plural */
 	public static void ignoreQuery(String query) {
 		// String filename = ServiceHandler.f.getAbsolutePath();
-		String filename = "ignorewords.txt";
+		String filename = "res/ignorewords.txt";
 		FileWriter fw = null;
 		try {
 			fw = new FileWriter(filename, true);

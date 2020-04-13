@@ -48,7 +48,7 @@ public class BestFirstSearchFuzzy {
 			}
 		}
 
-		FIS fis = FIS.load("res/UrlRelevance.fcl", true);
+		FIS fis = FIS.load("res/BFS_Fuzzy.fcl", true);
 		FunctionBlock fb = fis.getFunctionBlock("urlrelevance");
 
 		/* Set fuzzy variables */
