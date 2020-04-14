@@ -65,6 +65,12 @@ public class Stopwatch {
 		}
 	}
 
+	public double elapsedSeconds() {
+		long enlapsed = elapsed();
+		double seconds = enlapsed / 1000000000.0;
+		return seconds;
+	}
+
 	public long elapsed() {
 		if (isRunning()) {
 			if (isPaused())

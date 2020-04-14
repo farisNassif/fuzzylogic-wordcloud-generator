@@ -2,6 +2,7 @@ package ie.gmit.sw.ai.search;
 
 /* Simple node class that defines a child object */
 public final class Node implements Comparable<Node> {
+	public boolean isTraversed = false; // For beam
 	private String url;
 	private double score;
 	private int depth;
@@ -34,6 +35,10 @@ public final class Node implements Comparable<Node> {
 
 	public void setScore(double score) {
 		this.score = score;
+	}
+
+	public boolean isTraversed() {
+		return isTraversed;
 	}
 
 	@Override

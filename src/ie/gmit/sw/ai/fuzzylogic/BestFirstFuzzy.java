@@ -5,7 +5,7 @@ import net.sourceforge.jFuzzyLogic.FIS;
 import net.sourceforge.jFuzzyLogic.FunctionBlock;
 import net.sourceforge.jFuzzyLogic.rule.Variable;
 
-public class BestFirstSearchFuzzy {
+public class BestFirstFuzzy {
 	/* Scores the url based on how relevant it is */
 	public static double UrlRelevance(Node child, String titleData, String headingsData, String paragraphData,
 			String query) {
@@ -29,7 +29,7 @@ public class BestFirstSearchFuzzy {
 		/* Score Title Text */
 		for (String word : iterable_contents) {
 			if (word.contains(query)) {
-				occuranceScore += 50;
+				occuranceScore += 65;
 			}
 		}
 
@@ -37,7 +37,7 @@ public class BestFirstSearchFuzzy {
 		/* Score Heading Text */
 		for (String word : iterable_contents) {
 			if (word.contains(query)) {
-				occuranceScore += 25;
+				occuranceScore += 35;
 			}
 		}
 
@@ -45,16 +45,17 @@ public class BestFirstSearchFuzzy {
 		/* Score Paragraph Text */
 		for (String word : iterable_contents) {
 			if (word.contains(query)) {
-				occuranceScore += 5;
+				occuranceScore += 10;
 			}
 		}
 
+		/* Get a handle on the fcl file */
 		FIS fis = FIS.load("res/BFS_Fuzzy.fcl", true);
 		FunctionBlock fb = fis.getFunctionBlock("urlrelevance");
 
 		/* Set fuzzy variables */
 		fis.setVariable("occurance", Math.log(occuranceScore));
-		fis.setVariable("depth", depth);
+		fis.setVariable("depth", 1);
 
 		/* Evaluate function */
 		fis.evaluate();
@@ -64,6 +65,5 @@ public class BestFirstSearchFuzzy {
 
 		/* Return back the defuzzified value */
 		return relevance.getLatestDefuzzifiedValue();
-
 	}
 }

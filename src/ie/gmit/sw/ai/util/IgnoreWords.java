@@ -12,6 +12,7 @@ import java.util.Set;
 
 import ie.gmit.sw.ServiceHandler;
 
+/* Handles the ignore words .txt file */
 public class IgnoreWords {
 	public static Collection<String> ignoreWords() throws IOException {
 		Set<String> ignoreWords = Collections.synchronizedSet(new HashSet<String>());

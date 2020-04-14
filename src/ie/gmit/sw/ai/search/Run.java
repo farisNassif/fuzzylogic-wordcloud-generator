@@ -13,12 +13,12 @@ public class Run {
 		int wcloudSize = 20;
 
 		ExecutorService pool = Executors.newFixedThreadPool(5);
-		WordcloudProcessor wordcloudProcessor = new WordcloudProcessor(new Wordcloud("pizza", wcloudSize), 1, 3, 2);
+		WordcloudProcessor wordcloudProcessor = new WordcloudProcessor(new Wordcloud("batman", wcloudSize), 2, 6, 5);
 
 		CompletableFuture<WordFrequency[]> future = CompletableFuture.supplyAsync(() -> wordcloudProcessor.process(),
 				pool);
 
-		future.get();
+		// future.get();
 
 		for (WordFrequency word : future.get()) {
 			System.out.println(word);

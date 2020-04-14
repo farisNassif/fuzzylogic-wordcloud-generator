@@ -19,60 +19,53 @@ import ie.gmit.sw.ai.categorical.Categorize;
 import ie.gmit.sw.ai.cloud.WeightedFont;
 import ie.gmit.sw.ai.cloud.WordFrequency;
 import ie.gmit.sw.ai.fuzzylogic.BestFirstFuzzy;
+import ie.gmit.sw.ai.util.GetFrequency;
 import ie.gmit.sw.ai.util.IgnoreWords;
 import ie.gmit.sw.ai.util.MapSort;
 import ie.gmit.sw.ai.util.Stopwatch;
 
 /* Handles the internal processing of the wordcloud */
-public class BestFirstSearch extends Search {
-	/* Wordcloud object containing query word, branching factor and max depth */
+public class BeamSearch extends Search {
+	private final double TIME_LIMIT = 4.0;
+
 	private Wordcloud wordcloud;
 	private int branchingFactor;
 	private int maxDepth;
 
+	Stopwatch stopwatch = new Stopwatch();
+
 	/* Contains URL's that were already visited */
 	private Set<String> closed_list = new ConcurrentSkipListSet<>();
 	/* Prio queue, polled after each branch, sorted highest > lowest */
-	private Queue<Node> queue = new PriorityQueue<>(Comparator.comparing(Node::getScore).reversed());
+	private Queue<Node> queue = new PriorityQueue<>(Comparator.comparing(Node::getScore));
 	/* Maps each polled node's words to their frequencies */
 	private Map<String, Integer> word_freq = new ConcurrentHashMap<String, Integer>();
 
-	public BestFirstSearch(Wordcloud wordcloud, int branchingFactor, int maxDepth) {
+	public BeamSearch(Wordcloud wordcloud, int branchingFactor, int maxDepth) {
 		this.wordcloud = wordcloud;
 		this.branchingFactor = branchingFactor;
 		this.maxDepth = maxDepth;
 	}
 
 	@Override
-	public WordFrequency[] ExecuteSearch() {
-		Stopwatch stopwatch = new Stopwatch();
+	WordFrequency[] ExecuteSearch() {
+		stopwatch.start();
 
-		/* Start processing */
-		try {
-			/* Start stopwatch */
-			stopwatch.start();
-			System.out.println("Processing -- Stopwatch started ..");
-			/* Begin BFS */
-			InitializeSearch();
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}
+		InitializeSearch();
 
-		/* Generate freq table & sort word map highest > lowest */
-		WordFrequency[] words = new WeightedFont().getFontSizes(GenerateFrequency(MapSort.crunchifySortMap(word_freq)));
+		stopwatch.stop();
+		System.out.println("Search finished in " + stopwatch.toString() + " seconds");
 
-		/* Before return with frequency array, categorize the query word */
+		/* Before it returns with frequency array, categorize the query word */
 		Categorize.category((word_freq));
 
-		/* Stop stopwatch, search has concluded */
-		stopwatch.stop();
-		System.out.println("Stopwatch stopped ..");
-		System.out.println(stopwatch.toString());
-		return words;
+		/* Generate freq table & sort word map highest > lowest & return it */
+		return new WeightedFont()
+				.getFontSizes(GetFrequency.GenerateFrequency((MapSort.crunchifySortMap(word_freq)), wordcloud));
 	}
 
 	/* Kicks off the search */
-	private void InitializeSearch() throws IOException {
+	private void InitializeSearch() {
 		IgnoreWords.ignoreQuery(wordcloud.getWord());
 
 		/* Construct the initial node */
@@ -80,63 +73,61 @@ public class BestFirstSearch extends Search {
 
 		Node initial = new Node(queryUrl, 0);
 
-		try {
-			GenerateChildNodes(initial);
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}
+		GenerateChildNodes(initial);
+
 	}
 
 	/* Generate children from a parent node */
-	private void GenerateChildNodes(Node parent) throws Throwable {
-		int count = 0;
-		Elements children = null;
-
-		try {
-			children = ConnectNode(parent).select("a");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	private void GenerateChildNodes(Node parent) {
+		int birthControl = 0;
+		Elements children = ConnectNode(parent).select("a");
 
 		/* Score each child, add to prio queue */
 		for (Element child : children) {
 			String link = child.attr("href");
 
-			if (!closed_list.contains(link) && link.contains("https://") && count < branchingFactor) {
-				count++;
+			if (!closed_list.contains(link) && link.contains("https://") && birthControl < branchingFactor) {
+				birthControl++;
 				/* New child, one level deeper than parent */
 				Node childNode = new Node(link, parent.getDepth() + 1);
 
-				ScoreChild(childNode);
+				/* Dirty, but jsoup was giving me hastle */
+				try {
+					ScoreChild(childNode);
+				} catch (NullPointerException e) {
+
+				}
 
 				/* Don't want to visit this url again */
 				closed_list.add(link);
 			}
 		}
 
-		/* Poll the queue, generate more children from the best child */
-		if (closed_list.size() < (branchingFactor * maxDepth + 1) && queue.peek().getDepth() < maxDepth) {
-			// System.out.println("**POLLING** URL: " + queue.peek().getUrl() + " Depth: " +
-			// queue.peek().getDepth()
-			// + " Score: " + queue.peek().getScore());
+		if (closed_list.size() < (branchingFactor * maxDepth + 1)) {
+			/* For each node currently in the queue (Max 2) */
+			for (Node node : queue) {
+				/* If this node hasn't been expanded before .. */
+				if (node.isTraversed == false) {
+					/* Mark it as traversed, and generate children from it */
+					node.isTraversed = true;
+					GenerateChildNodes(node);
+				}
+			}
+		}
 
-			/* Map words to frequencies for best child */
-			MapWords(queue.peek());
-			/* Remove from queue and go generate more children from the best child node */
-			GenerateChildNodes(queue.poll());
+		/* This'll only ever execute when search has ran its course */
+		/* Will execute twice, one for each node in the queue */
+		for (Node node : queue) {
+			MapWords(node);
+			/* Don't even really need to poll, but just incase */
+			queue.poll();
 		}
 	}
 
 	/* Take a child node, score it */
-	private void ScoreChild(Node child) throws IOException {
+	private void ScoreChild(Node child) {
 		/* Connect to child URL */
-		Document childDoc = null;
-
-		try {
-			childDoc = ConnectNode(child);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		Document childDoc = ConnectNode(child);
 
 		/* Get Title data without numbers and symbols */
 		String title = childDoc.title().replaceAll("[^a-zA-Z]+", " ").toLowerCase();
@@ -152,19 +143,37 @@ public class BestFirstSearch extends Search {
 				+ child.getDepth());
 		child.setScore(BestFirstFuzzy.UrlRelevance(child, title, headings, paragraph, wordcloud.getWord()));
 
-		queue.offer(child);
+		/* Always make sure at least 2 nodes in the queue */
+		if (queue.size() < 2) {
+			queue.offer(child);
+		}
+
+		/* Sometimes pages with different URL's but the same content are read */
+		if (queue.peek().getScore() == child.getScore()) {
+			return;
+		}
+
+		/* If child score matches any of the enqueued node scores */
+		for (Node node : queue) {
+			/* Should never ever match, ridiculously unlikely */
+			if (node.getScore() == child.getScore()) {
+				/* Go back */
+				return;
+			}
+		}
+
+		/* If lowest scoring node is less than the newly generated child */
+		if (queue.peek().getScore() < child.getScore()) {
+			/* Get rid of lowest child, add new child */
+			queue.poll();
+			queue.offer(child);
+		}
 	}
 
 	/* Maps all words on the highest scoring page to frequency */
-	private void MapWords(Node bestChild) throws IOException {
+	private void MapWords(Node bestChild) {
 		/* Connect to the best child */
-		Document bestChildDoc = null;
-
-		try {
-			bestChildDoc = ConnectNode(bestChild);
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
+		Document bestChildDoc = ConnectNode(bestChild);
 
 		/* Get the whole text without symbold or numbers */
 		String wholetext = bestChildDoc.wholeText().replaceAll("[^a-zA-Z]", " ").toLowerCase();
@@ -172,8 +181,8 @@ public class BestFirstSearch extends Search {
 
 		/* For each word .. */
 		for (String word : words) {
+			/* If it's not worthless and irrelevant .. */
 			try {
-				/* If it's not worthless and irrelevant .. */
 				if ((word.length() > 2) && (!IgnoreWords.ignoreWords().contains(word))) {
 					/* If the word was already mapped */
 					if (word_freq.containsKey(word)) {
@@ -190,29 +199,14 @@ public class BestFirstSearch extends Search {
 		}
 	}
 
-	/* Generate frequency table and return it to service handler */
-	private WordFrequency[] GenerateFrequency(Map<String, Integer> sortedFrequencyMap) {
-		int count = 0;
-		WordFrequency[] wf = new WordFrequency[wordcloud.getMaxWords()];
-
-		for (Entry<String, Integer> word : sortedFrequencyMap.entrySet()) {
-			if (count >= wordcloud.getMaxWords()) {
-				break;
-			} else {
-				wf[count] = new WordFrequency(word.getKey(), word.getValue());
-				count++;
-			}
-		}
-		return wf;
-	}
-
 	/* Connects to a child node, return Doc */
-	private Document ConnectNode(Node child_to_connect_to) throws IOException {
+	private Document ConnectNode(Node child_to_connect_to) {
 		Document doc = null;
 		try {
+			System.setProperty("javax.net.ssl.trustStore", "your_keystore.jks");
 			doc = Jsoup.connect(child_to_connect_to.getUrl()).userAgent(
 					"Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36")
-					.referrer("http://www.google.com").ignoreContentType(true).ignoreHttpErrors(true).execute().parse();
+					.referrer("http://www.google.com").execute().parse();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

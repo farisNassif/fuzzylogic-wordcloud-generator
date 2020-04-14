@@ -23,7 +23,7 @@ public class WordcloudProcessor {
 			search = new BestFirstSearch(wordcloud, branchingFactor, maxDepth);
 			break;
 		case 2:
-			search = new HillClimbingSearch(wordcloud, branchingFactor, maxDepth);
+			search = new BeamSearch(wordcloud, branchingFactor, maxDepth);
 			break;
 		}
 		return search.ExecuteSearch();
