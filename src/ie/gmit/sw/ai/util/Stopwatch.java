@@ -1,6 +1,7 @@
 package ie.gmit.sw.ai.util;
 
 /* Stopwatch class for timing searches */
+/* Credit: https://gist.github.com/EdHurtig/78cbe307c1c85db12af7 */
 public class Stopwatch {
 
 	private boolean running;

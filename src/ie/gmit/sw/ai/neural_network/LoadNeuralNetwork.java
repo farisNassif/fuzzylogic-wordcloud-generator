@@ -5,6 +5,7 @@ import org.encog.neural.networks.BasicNetwork;
 import org.encog.persist.EncogDirectoryPersistence;
 
 /* Class that just loads and returns the saved NN */
+/* Credit: https://github.com/jeffheaton/encog-java-examples/blob/master/src/main/java/org/encog/examples/neural/persist/EncogPersistence.java#L73 */
 public class LoadNeuralNetwork {
 
 	public LoadNeuralNetwork() {
@@ -19,5 +20,4 @@ public class LoadNeuralNetwork {
 
 		return loadFromFileNetwork;
 	}
-
 }

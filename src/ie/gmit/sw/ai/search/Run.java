@@ -4,8 +4,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import ie.gmit.sw.ai.categorical.Categorize;
 import ie.gmit.sw.ai.cloud.WordFrequency;
@@ -15,18 +13,18 @@ public class Run {
 		int wcloudSize = 20;
 
 		ExecutorService pool = Executors.newFixedThreadPool(5);
-		WordcloudProcessor wordcloudProcessor = new WordcloudProcessor(new Wordcloud("software", wcloudSize), 2, 4, 3);
+		WordcloudProcessor wordcloudProcessor = new WordcloudProcessor(new Wordcloud("pizza", wcloudSize), 1, 3, 2);
 
 		CompletableFuture<WordFrequency[]> future = CompletableFuture.supplyAsync(() -> wordcloudProcessor.process(),
 				pool);
 
 		future.get();
 
-		// for (WordFrequency word : future.get()) {
-		// System.out.println(word);
-		// }
+		for (WordFrequency word : future.get()) {
+			System.out.println(word);
+		}
 
-		// System.out.println(Categorize.category);
+		System.out.println(Categorize.category);
 
 	}
 }

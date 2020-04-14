@@ -3,6 +3,7 @@ package ie.gmit.sw.ai.neural_network;
 import org.encog.neural.networks.BasicNetwork;
 
 /* Contains the loaded NN, will allow input to process categories */
+/* Credit: https://github.com/jeffheaton/encog-java-examples/blob/master/src/main/java/org/encog/examples/neural/persist/EncogPersistence.java#L73 */
 public class NeuralNetwork {
 
 	public NeuralNetwork() {

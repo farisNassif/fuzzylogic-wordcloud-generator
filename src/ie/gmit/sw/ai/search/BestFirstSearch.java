@@ -21,6 +21,7 @@ import ie.gmit.sw.ai.cloud.WordFrequency;
 import ie.gmit.sw.ai.fuzzylogic.BestFirstSearchFuzzy;
 import ie.gmit.sw.ai.util.IgnoreWords;
 import ie.gmit.sw.ai.util.MapSort;
+import ie.gmit.sw.ai.util.Stopwatch;
 
 /* Handles the internal processing of the wordcloud */
 public class BestFirstSearch extends Search {
@@ -43,8 +44,13 @@ public class BestFirstSearch extends Search {
 
 	@Override
 	public WordFrequency[] ExecuteSearch() {
+		Stopwatch stopwatch = new Stopwatch();
+
 		/* Start processing */
 		try {
+			/* Start stopwatch */
+			stopwatch.start();
+			/* Begin BFS */
 			InitializeSearch();
 		} catch (Throwable e) {
 			e.printStackTrace();
@@ -55,6 +61,10 @@ public class BestFirstSearch extends Search {
 
 		/* Before return with frequency array, categorize the query word */
 		Categorize.findCategory(word_freq);
+
+		/* Stop stopwatch */
+		stopwatch.stop();
+		System.out.println(stopwatch.toString());
 
 		return words;
 	}
@@ -133,9 +143,9 @@ public class BestFirstSearch extends Search {
 		/* Get Paragraph data without numbers and symbols */
 		String paragraph = childDoc.select("p").text().replaceAll("[^a-zA-Z]+", " ").toLowerCase();
 
-		System.out.println(child.getUrl() + ": Heuristic Score => "
-				+ BestFirstSearchFuzzy.UrlRelevance(child, title, headings, paragraph, wordcloud.word) + " Depth: "
-				+ child.getDepth());
+		//System.out.println(child.getUrl() + ": Heuristic Score => "
+		//		+ BestFirstSearchFuzzy.UrlRelevance(child, title, headings, paragraph, wordcloud.word) + " Depth: "
+		//		+ child.getDepth());
 		child.setScore(BestFirstSearchFuzzy.UrlRelevance(child, title, headings, paragraph, wordcloud.word));
 
 		queue.offer(child);
@@ -198,7 +208,7 @@ public class BestFirstSearch extends Search {
 		try {
 			doc = Jsoup.connect(child_to_connect_to.getUrl()).userAgent(
 					"Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36")
-					.referrer("http://www.google.com").execute().parse();
+					.referrer("http://www.google.com").timeout(1500).execute().parse();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

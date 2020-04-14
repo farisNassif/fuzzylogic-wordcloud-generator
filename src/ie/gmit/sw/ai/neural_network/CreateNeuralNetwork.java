@@ -28,7 +28,7 @@ public class CreateNeuralNetwork {
 		BasicNetwork network = new BasicNetwork();
 		/* 8 Categories */
 		network.addLayer(new BasicLayer(null, true, 8));
-		/* 32 hidden layers, felt to give the most consistent NN */
+		/* 32 hidden layers, felt to give the most consistent NN without starvation */
 		network.addLayer(new BasicLayer(new ActivationSigmoid(), true, 32));
 		/* 8 output layers, 1 for each category */
 		network.addLayer(new BasicLayer(new ActivationSigmoid(), false, 8));
@@ -38,10 +38,7 @@ public class CreateNeuralNetwork {
 		/* Init the training set with prebuilt training data / expected data */
 		MLDataSet trainingSet = new BasicMLDataSet(trainingData, expectedData);
 
-		/*
-		 * First-order optimization algorithm for supervised learning in feedforward
-		 * ANN's
-		 */
+		/* First-order optimization algorithm, supervised learning in feedforward ANN's */
 		ResilientPropagation train = new ResilientPropagation(network, trainingSet);
 		/* Min error .000000000001 for the craic */
 		double minError = 0.000000000001;
