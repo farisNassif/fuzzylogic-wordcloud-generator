@@ -5,10 +5,26 @@ import java.util.Map;
 import ie.gmit.sw.ai.neural_network.NeuralNetwork;
 import ie.gmit.sw.ai.util.MapSort;
 
+/* After a search has concluded, get the word/frequency mapping and 
+ * try and categorize the query word based on the association of 
+ * returned words */
 public class Categorize {
-	public static String category;
+	private static String category;
 
-	public static void findCategory(Map<String, Integer> frequencies) {
+	public Categorize(Map<String, Integer> frequencies) {
+		super();
+		Categorize.category = category(frequencies);
+	}
+
+	public static String getCategory() {
+		return category;
+	}
+
+	public static void setCategory(String category) {
+		Categorize.category = category;
+	}
+
+	public static String category(Map<String, Integer> frequencies) {
 
 		/* Used to normalize data before entry into NN */
 		final int NORMALIZER = 3;
@@ -54,6 +70,8 @@ public class Categorize {
 		// System.out.println(Categories.CategoryMap().get(NN.Process(result)));
 		/* Get the category with the result returned from NN */
 		category = Categories.CategoryMap().get(NN.Process(result));
+
+		return category;
 	}
 
 	/* Will scale all category results so they represent a value between 0 - 1 */

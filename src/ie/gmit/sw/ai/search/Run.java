@@ -24,7 +24,7 @@ public class Run {
 			System.out.println(word);
 		}
 
-		System.out.println(Categorize.category);
+		System.out.println(Categorize.getCategory());
 
 	}
 }

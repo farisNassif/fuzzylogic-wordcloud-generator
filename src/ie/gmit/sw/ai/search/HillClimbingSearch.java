@@ -6,6 +6,7 @@ import ie.gmit.sw.ai.cloud.WordFrequency;
 import ie.gmit.sw.ai.util.IgnoreWords;
 import ie.gmit.sw.ai.util.Stopwatch;
 
+/* Handles the internal processing of the wordcloud */
 public class HillClimbingSearch extends Search {
 	private Wordcloud wordcloud;
 	private int branchingFactor;
@@ -38,10 +39,10 @@ public class HillClimbingSearch extends Search {
 
 	/* Kicks off the search */
 	private void InitializeSearch() throws Throwable {
-		IgnoreWords.ignoreQuery(wordcloud.word);
+		IgnoreWords.ignoreQuery(wordcloud.getWord());
 
 		/* Construct the initial node */
-		String queryUrl = "https://duckduckgo.com/html/?q=" + wordcloud.word;
+		String queryUrl = "https://duckduckgo.com/html/?q=" + wordcloud.getWord();
 
 		Node initial = new Node(queryUrl, 0);
 

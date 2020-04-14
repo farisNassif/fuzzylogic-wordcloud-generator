@@ -2,8 +2,8 @@ package ie.gmit.sw.ai.search;
 
 /* Generic word cloud object defining key values */
 public class Wordcloud {
-	String word;
-	int maxWords;
+	private String word;
+	private int maxWords;
 
 	public Wordcloud(String word, int maxWords) {
 		super();

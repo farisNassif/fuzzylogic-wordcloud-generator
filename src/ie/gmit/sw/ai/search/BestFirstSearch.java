@@ -60,7 +60,7 @@ public class BestFirstSearch extends Search {
 		WordFrequency[] words = new WeightedFont().getFontSizes(GenerateFrequency(MapSort.crunchifySortMap(word_freq)));
 
 		/* Before return with frequency array, categorize the query word */
-		Categorize.findCategory(word_freq);
+		Categorize.category((word_freq));
 
 		/* Stop stopwatch */
 		stopwatch.stop();
@@ -71,10 +71,10 @@ public class BestFirstSearch extends Search {
 
 	/* Kicks off the search */
 	private void InitializeSearch() throws Throwable {
-		IgnoreWords.ignoreQuery(wordcloud.word);
+		IgnoreWords.ignoreQuery(wordcloud.getWord());
 
 		/* Construct the initial node */
-		String queryUrl = "https://duckduckgo.com/html/?q=" + wordcloud.word;
+		String queryUrl = "https://duckduckgo.com/html/?q=" + wordcloud.getWord();
 
 		Node initial = new Node(queryUrl, 0);
 
@@ -143,10 +143,11 @@ public class BestFirstSearch extends Search {
 		/* Get Paragraph data without numbers and symbols */
 		String paragraph = childDoc.select("p").text().replaceAll("[^a-zA-Z]+", " ").toLowerCase();
 
-		//System.out.println(child.getUrl() + ": Heuristic Score => "
-		//		+ BestFirstSearchFuzzy.UrlRelevance(child, title, headings, paragraph, wordcloud.word) + " Depth: "
-		//		+ child.getDepth());
-		child.setScore(BestFirstSearchFuzzy.UrlRelevance(child, title, headings, paragraph, wordcloud.word));
+		// System.out.println(child.getUrl() + ": Heuristic Score => "
+		// + BestFirstSearchFuzzy.UrlRelevance(child, title, headings, paragraph,
+		// wordcloud.word) + " Depth: "
+		// + child.getDepth());
+		child.setScore(BestFirstSearchFuzzy.UrlRelevance(child, title, headings, paragraph, wordcloud.getWord()));
 
 		queue.offer(child);
 	}
@@ -189,10 +190,10 @@ public class BestFirstSearch extends Search {
 	/* Generate frequency table and return it to service handler */
 	private WordFrequency[] GenerateFrequency(Map<String, Integer> sortedFrequencyMap) {
 		int count = 0;
-		WordFrequency[] wf = new WordFrequency[wordcloud.maxWords];
+		WordFrequency[] wf = new WordFrequency[wordcloud.getMaxWords()];
 
 		for (Entry<String, Integer> word : sortedFrequencyMap.entrySet()) {
-			if (count >= wordcloud.maxWords) {
+			if (count >= wordcloud.getMaxWords()) {
 				break;
 			} else {
 				wf[count] = new WordFrequency(word.getKey(), word.getValue());
@@ -208,7 +209,7 @@ public class BestFirstSearch extends Search {
 		try {
 			doc = Jsoup.connect(child_to_connect_to.getUrl()).userAgent(
 					"Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36")
-					.referrer("http://www.google.com").timeout(1500).execute().parse();
+					.referrer("http://www.google.com").timeout(2000).execute().parse();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

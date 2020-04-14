@@ -5,6 +5,10 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
 
+/* Class that consists of sets of the words most associated with a category, 
+ * in future will allow for continious feedback from user to allow them to 
+ * forward their query world results into a categorical set if their query 
+ * words chosen category was accurate */
 public class CategoricalWords {
 
 	/* Category 1: Location */
