@@ -3,7 +3,7 @@ package ie.gmit.sw.ai.categorical;
 import java.util.Map;
 
 import ie.gmit.sw.ai.neural_network.NeuralNetwork;
-import ie.gmit.sw.ai.search.MapSort;
+import ie.gmit.sw.ai.util.MapSort;
 
 public class Categorize {
 	public static String category;
@@ -51,12 +51,13 @@ public class Categorize {
 				(scale(movie, 1, total) * NORMALIZER), (scale(book, 1, total) * NORMALIZER),
 				(scale(animal, 1, total) * NORMALIZER), (scale(music, 1, total) * NORMALIZER) };
 
+		// System.out.println(Categories.CategoryMap().get(NN.Process(result)));
 		/* Get the category with the result returned from NN */
 		category = Categories.CategoryMap().get(NN.Process(result));
 	}
 
 	/* Will scale all category results so they represent a value between 0 - 1 */
-	public static double scale(double category, double minVal, double categoricalMax) {
+	private static double scale(double category, double minVal, double categoricalMax) {
 		return (((category - minVal) / (categoricalMax - minVal)) * 1.1);
 	}
 }

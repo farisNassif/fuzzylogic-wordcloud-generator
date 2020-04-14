@@ -1,5 +1,6 @@
-package ie.gmit.sw.ai.search;
+package ie.gmit.sw.ai.fuzzylogic;
 
+import ie.gmit.sw.ai.search.Node;
 import net.sourceforge.jFuzzyLogic.FIS;
 import net.sourceforge.jFuzzyLogic.FunctionBlock;
 import net.sourceforge.jFuzzyLogic.rule.Variable;

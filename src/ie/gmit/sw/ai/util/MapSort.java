@@ -1,4 +1,4 @@
-package ie.gmit.sw.ai.search;
+package ie.gmit.sw.ai.util;
 
 import java.util.ArrayList;
 import java.util.Collections;

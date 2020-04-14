@@ -18,6 +18,9 @@ import org.jsoup.select.Elements;
 import ie.gmit.sw.ai.categorical.Categorize;
 import ie.gmit.sw.ai.cloud.WeightedFont;
 import ie.gmit.sw.ai.cloud.WordFrequency;
+import ie.gmit.sw.ai.fuzzylogic.BestFirstSearchFuzzy;
+import ie.gmit.sw.ai.util.IgnoreWords;
+import ie.gmit.sw.ai.util.MapSort;
 
 /* Handles the internal processing of the wordcloud */
 public class BestFirstSearch extends Search {
@@ -38,6 +41,7 @@ public class BestFirstSearch extends Search {
 		this.maxDepth = maxDepth;
 	}
 
+	@Override
 	public WordFrequency[] ExecuteSearch() {
 		/* Start processing */
 		try {

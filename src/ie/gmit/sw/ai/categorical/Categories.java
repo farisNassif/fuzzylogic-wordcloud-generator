@@ -8,6 +8,8 @@ public enum Categories {
 
 	public static Map<Integer, String> CategoryMap() {
 		Map<Integer, String> categorical_map = new ConcurrentHashMap<Integer, String>() {
+			private static final long serialVersionUID = 1L;
+
 			{
 				put(0, Categories.Location.name());
 				put(1, Categories.Food.name());
