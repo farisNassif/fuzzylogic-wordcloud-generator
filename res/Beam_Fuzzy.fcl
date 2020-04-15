@@ -64,7 +64,7 @@ END_FUZZIFY
 *  only working with 2 primary nodes at a given point the likelyhood of reaching greater depths is high.
 * 
 *  Since the input is always going to be a fixed integer (1-10) each depth value will hold a unique value, a depth value of 2 yielding a superficial membership value 
-*  of 0.5 while a depth value of 3 yields a shallow value of 1, each linguistic term is independent and will not overlap with any others.
+*  of 0.93 while a depth value of 3 yields a sole shallow value of 0.85, each linguistic term is independent and will not intersect with any others.
 * 
 *  -- Linguistic Terms --
 *  1. Superficial: Very close to the initial node, implies high relevance 
@@ -73,10 +73,10 @@ END_FUZZIFY
 *
 *  [Image of Depth chart - https://i.imgur.com/LyLVnCn.png] 
 */
-FUZZIFY depth		
-  	TERM superficial := (1, 1) (2, 0.5) (2, 0);
-  	TERM shallow := (2.99, 0) (3, 1) (5, 0.5) (5, 0);
-  	TERM chasmic := (5.99, 0) (6, 1) (10, 0);
+FUZZIFY depth	  	
+	TERM superficial := (1, 1) (2, 0.93) (2, 0);
+  	TERM shallow := (3, 0) (3, 0.85) (4, 0.73) (5, 0.61) (5, 0);
+  	TERM chasmic := (6, 0) (6, 0.48) (7, 0.36) (8, 0.25) (9, 0.13) (10, 0);	
 END_FUZZIFY
 
 /*
@@ -120,42 +120,90 @@ DEFUZZIFY relevance
     	DEFAULT := 0; // If no rule is activated, default value is 0 
 END_DEFUZZIFY
 
-// Inference rules
+/* 
+*  Fuzzy Inference rules that conclude the relevance of the child.
+*
+*  Rules have been written to cover every possible input and have been tested thoroughly to ensure a wide range of inputs produce output that reflect fairly.
+*  Initially had more rules but combined some with OR and removed a lot of irrelevant ones. Individual rules will be explained below.
+*/
+
 RULEBLOCK No1
 	AND : MIN;
-	ACT : MIN;
-	ACCU : MAX;
+	ACT : MIN; // Use 'min' activation method
+	ACCU : MAX; // Use 'maximum' as accumulation method
 
+	/* 
+	*  Best case scenario, query word is frequently occuring 
+	*  and the child isn't deep in the tree.
+	*/ 
 	RULE 1 :IF occurance IS perennial 	
 		AND depth IS superficial 
 		THEN relevance IS substantial;
 
-	RULE 2 :IF occurance IS perennial 	
-		AND depth IS shallow
+	/* 
+	*  Both results 2, 3 & 4 are very good outcomes, using the parental variable
+	* to distinguish between 3 and 4
+	*  
+ 	*/ 
+	RULE 2: IF occurance IS periodic 	
+		AND depth IS superficial
 		AND parent IS alpha
 		THEN relevance IS substantial;
 
-	RULE 3 :IF occurance IS perennial 	
-		AND depth IS chasmic
+	RULE 3 :IF occurance IS perennial 
+		AND depth IS shallow	
+		AND parent IS alpha
+		THEN relevance IS substantial;
+
+	RULE 4 :IF occurance IS perennial 	
+		AND depth IS shallow
+		AND parent IS beta
 		THEN relevance IS borderline;
 
-	RULE 4 :IF occurance IS periodic 	
-		AND depth IS superficial
-		OR depth IS shallow
-		THEN relevance IS borderline;
-
-	RULE 5 :IF occurance IS periodic 	
+	/* 
+	*  Starting to move onto lesser valuable outcomes,
+	*  not a whole lot special with the following rules just covering 
+	*  the bases for the possible outcomes
+	*/ 
+	RULE 5 :IF occurance IS perennial 	
 		AND depth IS chasmic
 		AND parent IS alpha
 		THEN relevance IS borderline;
 
-	RULE 6 :IF occurance IS periodic 	
+	RULE 6 :IF occurance IS perennial 	
 		AND depth IS chasmic
 		AND parent IS beta
 		THEN relevance IS insubstantial;
 
-	RULE 7 :IF occurance IS sporadic 
-		THEN relevance IS nonexistant;
+	RULE 7 :IF occurance IS periodic 
+		AND depth IS shallow
+		AND parent IS alpha
+		THEN relevance is borderline;
+
+	RULE 8 :IF occurance IS periodic 
+		AND depth IS shallow
+		AND parent IS beta
+		THEN relevance is insubstantial;
+
+	/* 
+	*  Rules 9 and 10 are ver similar, uses the alpha/beta parental 
+	*  variable to make the decision less of a black and white one
+	*/
+	RULE 9 :IF occurance IS periodic
+		AND depth IS chasmic
+		AND parent IS alpha
+		THEN relevance IS borderline;
+
+	RULE 10 :IF occurance IS periodic 	
+		 AND depth IS chasmic
+		 AND parent IS beta
+		 THEN relevance IS insubstantial;
+
+	/* 
+	*  Not enough occurance, child shouldn't be considered  
+	*/
+	RULE 11 :IF occurance IS sporadic
+		 THEN relevance IS nonexistant;
 
 END_RULEBLOCK
 
