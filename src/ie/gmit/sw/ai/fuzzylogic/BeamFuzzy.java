@@ -20,14 +20,14 @@ public class BeamFuzzy {
 		/* Scored at a class level with different weights */
 		double occuranceScore = 0;
 		/* By default parent strength is strong */
-		int parentStrength = 1;
+		int parentStrength = 2;
 
 		/* If queue isn't empty */
 		if (queue.size() > 0) {
 			/* If the lowest scoring node in queue is the parent of the child node */
 			if (queue.peek().getUrl() == child.getParent().getUrl()) {
 				/* Then parent strength is weak */
-				parentStrength = 2;
+				parentStrength = 1;
 			}
 		}
 
@@ -71,7 +71,7 @@ public class BeamFuzzy {
 		/* Set fuzzy variables */
 		fis.setVariable("occurance", Math.log(occuranceScore));
 		fis.setVariable("parent", parentStrength);
-		fis.setVariable("depth", 1);
+		fis.setVariable("depth", child.getDepth());
 
 		/* Evaluate function */
 		fis.evaluate();

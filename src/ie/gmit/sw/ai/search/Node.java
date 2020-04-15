@@ -24,7 +24,12 @@ public final class Node implements Comparable<Node> {
 	}
 
 	public int getDepth() {
-		return depth;
+		/* For fuzzy, anything over 10 is considered 10 */
+		if (depth > 10) {
+			return 10;
+		} else {
+			return depth;
+		}
 	}
 
 	public void setDepth(int depth) {

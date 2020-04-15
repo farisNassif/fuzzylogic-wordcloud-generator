@@ -138,8 +138,8 @@ public class BeamSearch extends Search {
 		String paragraph = childDoc.select("p").text().replaceAll("[^a-zA-Z]+", " ").toLowerCase();
 
 		System.out.println(child.getUrl() + ": Heuristic Score => "
-				+ BeamFuzzy.UrlRelevance(child, queue, title, headings, paragraph, wordcloud.getWord())
-				+ " Depth: " + child.getDepth());
+				+ BeamFuzzy.UrlRelevance(child, queue, title, headings, paragraph, wordcloud.getWord()) + " Depth: "
+				+ child.getDepth());
 
 		/* Score the child using fuzzy logic and set the score */
 		child.setScore(BeamFuzzy.UrlRelevance(child, queue, title, headings, paragraph, wordcloud.getWord()));

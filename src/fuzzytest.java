@@ -11,14 +11,15 @@ public class fuzzytest {
 		FunctionBlock fb = fis.getFunctionBlock("urlrelevance");
 
 		/* Set fuzzy variables */
-		fis.setVariable("occurance", 9);
-		fis.setVariable("parent", 2);
-		fis.setVariable("depth", 5);
+		fis.setVariable("occurance", 6);
+		fis.setVariable("depth",2);
+		fis.setVariable("parent",1);
 
 		// Evaluate
 		fis.evaluate();
 		Variable relevance = fb.getVariable("relevance");
-		JFuzzyChart.get().chart(fb);
+		JFuzzyChart.get().chart(relevance, relevance.getDefuzzifier(), true);
+		
 		//JFuzzyChart.get().chart(relevance, relevance.getDefuzzifier(), true);
 		// display page relevancy
 		System.out.println("Relevance:" + relevance.getLatestDefuzzifiedValue() + "\n");

@@ -1,42 +1,126 @@
+/* FCL File that defines the fuzzy logic for the implemented Beam Search */
+
 FUNCTION_BLOCK urlrelevance
 
+/* 
+* Three input values
+*
+* 1. Occurance
+* - The occurance of the query word in a given URL, the total is calculated based on the location of the query word.
+*   If the query word is contained within the title, the occurance calculation is incremented by an amount greater than
+*   it would if the word had been found in the paragraph text for example. The amount is calculated within the Java class.
+*
+* 2. Depth
+* - The depth of the node. The greater the depth the less and less relevant it becomes. Unlike the BFS depth implementation,
+*   the depth scale for beam is 1-10, this is because with this implementation of beam there will only ever be two nodes in the queue
+*   meaning the likelyhood of generating deeper but probably still relevant children will be higher than BFS, where a depth of three 
+*   would be considered pretty bad, here three is pretty nice.
+*
+* 3. Parent
+* - For this beam implementation I decided to add an extra input paramater. As mentioned the beam search will only ever keep the two best
+*   nodes it encounters and poll them in a LIFO order since unlike the BFS queue which is ordered high > low, this queue is ordered low > high, 
+*   meaning the weaker (beta) node will always be polled first since the weaker node will always be the last one into the queue.
+*   Since child nodes will only ever be made from these two parents, I added a bit of an extra weighting for children of the oldest / highest
+*   node in the queue (alpha).
+*/
 VAR_INPUT				
 	occurance: REAL;
 	depth: REAL;
 	parent: REAL;
 END_VAR
 
+/* Output will be a real value from 0 - 100, 100 being very relevant and 0 being non existant */
 VAR_OUTPUT				
 	relevance : REAL;
 END_VAR
 
+/* 
+*  Rate of occurance for the query word, the calculated frequency value in the Java class is passed into a logarithmic function which is pretty good for this.
+*  A calculated occurance value of 10000 which is excellent would be given a logarithmic value of 9.2, likewise a still very relevant value of 3000 would be equal to 8.0.
+*
+*  Borderline occurance values like 300 would be equal to a logarithmic value of 6, giving it a perennial membership value of 0.315 and a periodic membership value 
+*  of 0.18, which is still good since there aren't hard borders with the plot. For example the periodic and sporadic values intersect at 
+*  a membership value of 0.325 on the x value of 4, giving any calculated frequency value with a logarithmic value of 4 a sporadic membership value of 0.325 
+*  and a periodic membership value of 0.325 allowing for a fair weighting when it comes to executing fuzzy rules.
+*
+*  Anything with a logarithmic value of 0 all the way to 3.5 has full membership of sporadic, meaning it should probably be ignored (See Rule 7) 
+*  
+*  -- Linguistic Terms --
+*  1. Sporadic : Irregular or infrequent occurance of the query term, not very interesting 
+*  2. Periodic : Regular occurances of the query term, somewhat interesting
+*  3. Perennial: Continually recurring, very interesting
+*
+*  [Image of Occurance chart - https://i.imgur.com/RkgvxLg.png]
+*/
 FUZZIFY occurance			
-	TERM sporadic := (0, 1)(3.5, 1)(3.7, 0.7)(3.9, 0.5)(4.1, 0.3)(4.3, 0.15)(4.5, 0);
-	TERM periodic := (3.5,0)(3.7,0.125)(3.8,0.2)(3.9,0.275)(4,0.325)(4.5,0.725)(4.6,0.815)(4.8,1)(5.15,1)(5.3,0.8)(5.5,0.55)(5.7,0.325)(5.9,0.215)(6.1,0.15)(6.3,0.1)(6.6,0.05)(7.15,0); 
-	TERM perennial := (5, 0)(5.25,0.1)(5.75,0.25)(6,0.315)(6.5,0.45)(7,0.565)(7.5,0.675)(8,0.76)(8.5,0.83)(9,0.9)(9.4, 0.95)(10,1);
+	TERM sporadic := (0, 1) (3.5, 1) (3.7, 0.7) (3.9, 0.5) (4.1, 0.3) (4.3, 0.15) (4.5, 0);
+	TERM periodic := (3.5,0) (3.7,0.125) (3.8,0.2) (3.9,0.275) (4,0.325) (4.5,0.725) (4.6,0.815) (4.8,1) (5.15,1) (5.3,0.8) (5.5,0.55) (5.7,0.325) (5.9,0.215) (6.1,0.15) (6.3,0.1) (6.6,0.05) (7.15,0); 
+	TERM perennial := (5, 0) (5.25,0.1) (5.75,0.25) (6,0.315) (6.5,0.45) (7,0.565) (7.5,0.675) (8,0.76) (8.5,0.83) (9,0.9) (9.4, 0.95) (10,1);
 END_FUZZIFY
 
+/* 
+*  Unlike the BFS fuzzy implementation it wouldn't be a good idea to have singleton values for the depth for reasons mentioned earlier, the big one being 
+*  with the BFS implementation the search likely won't be seeing great depths due to the max url cap, meaning a depth of 3 is pretty poor, but with beam 
+*  only working with 2 primary nodes at a given point the likelyhood of reaching greater depths is high.
+* 
+*  Since the input is always going to be a fixed integer (1-10) each depth value will hold a unique value, a depth value of 2 yielding a superficial membership value 
+*  of 0.5 while a depth value of 3 yields a shallow value of 1, each linguistic term is independent and will not overlap with any others.
+* 
+*  -- Linguistic Terms --
+*  1. Superficial: Very close to the initial node, implies high relevance 
+*  2. Shallow    : Not too deep not too close to the initial node, still some nice relevance
+*  3. Chasmic    : Getting very deep, relevance will start dropping fast
+*
+*  [Image of Depth chart - https://i.imgur.com/LyLVnCn.png] 
+*/
 FUZZIFY depth		
-  	TERM superficial := (0.99, 1) (2, 0.5)(2, 0);
-  	TERM shallow := (2.99, 0)(3, 1) (5, 0.5) (5, 0);
-  	TERM chasmic := (5.99, 0)(6, 1) (10, 0);
+  	TERM superficial := (1, 1) (2, 0.5) (2, 0);
+  	TERM shallow := (2.99, 0) (3, 1) (5, 0.5) (5, 0);
+  	TERM chasmic := (5.99, 0) (6, 1) (10, 0);
 END_FUZZIFY
 
+/*
+*  Singleton values representing the alpha/beta parent.
+*  Since the queue will always only keep the two highest nodes nodes it would be handy to add some weighting to the final heuristic score of the child depending 
+*  if the higher or lower node is the parent. This fuzzy input variable turned out to be great for eliminating some grey areas (See rule 6 and 7), allowing 
+*  for a bit more fine tuning when determining the relevance value.
+* 
+*  -- Linguistic Terms --
+*  1. Beta : Child of the lower node in the queue, child is less relevant than an alpha child
+*  2. Alpha: Child of the higher node in the queue, makes the child a bit more relevant
+*
+*  [Image of Parent chart - https://i.imgur.com/HTDhWeX.png] 
+*/
 FUZZIFY parent
   	TERM beta := 1;
   	TERM alpha := 2;
 END_FUZZIFY
 
+/*
+*  Defuzzify output variable 'Relevance' via Mamdani inference, resulting in a singleton output.
+*  Generates the overall relevance of the child after the inference rules have been executed. Uses the Center of Gravity defuzzification method, essentially 
+*  the relevant defuzzified values generate a shape, the output is an amalgamation of these shapes and the COG is the value of the absolute center of 
+*  that amalgamtion after the respective shape weighting has been applied. COG yields a reasonable output singleton output value which is ideal for the
+*  application of the value within the program.
+*
+*  -- Linguistic Terms --
+*  1. Nonexistant  : The child's relevance is non existant, shouldn't be acknowledged
+*  2. Insubstantial: The relevance is below average, not strong enough to be considered
+*  3. Borderline   : Purgatory, isn't quite insubstantial but isn't quite substantial, shouldn't be ignored
+*  4. Substantial  : Greatly relevant, will provide some brilliant results
+*
+*  [Image of Relevance chart - https://i.imgur.com/hNGKuWp.png] 
+*/
 DEFUZZIFY relevance
-	TERM nonexistant := (0,0);
-    	TERM insubstantial := (0,0)(16.65,1)(33.3,0);
-    	TERM borderline := (33.3,0)(50,1)(60,1)(75,0);
-    	TERM substantial := (65,0)(100,1);
+	TERM nonexistant := (0,0) (0,1) (1,0);
+    	TERM insubstantial := (0,0) (16.65,1) (33.3,0); // trian 0.0 16.65 33.3;
+    	TERM borderline := (33.3,0) (50,1) (60,1) (75,0);
+    	TERM substantial := (65,0) (100,1);
     	METHOD : COG;
-    	DEFAULT := 0;
+    	DEFAULT := 0; // If no rule is activated, default value is 0 
 END_DEFUZZIFY
 
-
+// Inference rules
 RULEBLOCK No1
 	AND : MIN;
 	ACT : MIN;
@@ -58,27 +142,21 @@ RULEBLOCK No1
 	RULE 4 :IF occurance IS periodic 	
 		AND depth IS superficial
 		OR depth IS shallow
-		AND parent IS alpha
 		THEN relevance IS borderline;
 
 	RULE 5 :IF occurance IS periodic 	
-		AND depth IS superficial
-		OR depth IS shallow
-		AND parent IS beta
-		THEN relevance IS insubstantial;
+		AND depth IS chasmic
+		AND parent IS alpha
+		THEN relevance IS borderline;
 
 	RULE 6 :IF occurance IS periodic 	
 		AND depth IS chasmic
-		AND parent IS alpha
+		AND parent IS beta
 		THEN relevance IS insubstantial;
 
-	RULE 7 :IF occurance IS periodic 	
-		AND depth IS chasmic
-		AND parent IS beta
+	RULE 7 :IF occurance IS sporadic 
 		THEN relevance IS nonexistant;
 
-	RULE 8 :IF occurance IS sporadic 
-		THEN relevance IS nonexistant;
 END_RULEBLOCK
 
 END_FUNCTION_BLOCK

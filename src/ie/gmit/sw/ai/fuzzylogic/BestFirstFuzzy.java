@@ -10,8 +10,14 @@ public class BestFirstFuzzy {
 	public static double UrlRelevance(Node child, String titleData, String headingsData, String paragraphData,
 			String query) {
 		double occuranceScore = 0;
+		final int URL_WEIGHT = 150;
+		final int TITLE_WEIGHT = 85;
+		final int HEADING_WEIGHT = 45;
+		final int PARAGRAPH_WEIGHT = 10;
+
 		int depth = 0;
 
+		/* For BFS, anything with a depth over 3 is abyssmal */
 		if (child.getDepth() > 3) {
 			depth = 3;
 		} else {
@@ -22,14 +28,14 @@ public class BestFirstFuzzy {
 
 		/* If the URL itself contains the query word */
 		if (child.getUrl().contains(query)) {
-			occuranceScore += 150;
+			occuranceScore += URL_WEIGHT;
 		}
 
 		String[] iterable_contents = titleData.split(" ");
 		/* Score Title Text */
 		for (String word : iterable_contents) {
 			if (word.contains(query)) {
-				occuranceScore += 65;
+				occuranceScore += TITLE_WEIGHT;
 			}
 		}
 
@@ -37,7 +43,7 @@ public class BestFirstFuzzy {
 		/* Score Heading Text */
 		for (String word : iterable_contents) {
 			if (word.contains(query)) {
-				occuranceScore += 35;
+				occuranceScore += HEADING_WEIGHT;
 			}
 		}
 
@@ -45,7 +51,7 @@ public class BestFirstFuzzy {
 		/* Score Paragraph Text */
 		for (String word : iterable_contents) {
 			if (word.contains(query)) {
-				occuranceScore += 10;
+				occuranceScore += PARAGRAPH_WEIGHT;
 			}
 		}
 
