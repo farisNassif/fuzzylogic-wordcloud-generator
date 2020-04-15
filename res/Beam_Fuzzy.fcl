@@ -3,6 +3,7 @@ FUNCTION_BLOCK urlrelevance
 VAR_INPUT				
 	occurance: REAL;
 	depth: REAL;
+	parent: REAL;
 END_VAR
 
 VAR_OUTPUT				
@@ -16,9 +17,14 @@ FUZZIFY occurance
 END_FUZZIFY
 
 FUZZIFY depth		
-  	TERM superficial := 1;
-  	TERM shallow := 2;
-  	TERM chasmic := 3;
+  	TERM superficial := (0.99, 1) (2, 0.5)(2, 0);
+  	TERM shallow := (2.99, 0)(3, 1) (5, 0.5) (5, 0);
+  	TERM chasmic := (5.99, 0)(6, 1) (10, 0);
+END_FUZZIFY
+
+FUZZIFY parent
+  	TERM beta := 1;
+  	TERM alpha := 2;
 END_FUZZIFY
 
 DEFUZZIFY relevance
@@ -42,22 +48,36 @@ RULEBLOCK No1
 
 	RULE 2 :IF occurance IS perennial 	
 		AND depth IS shallow
+		AND parent IS alpha
 		THEN relevance IS substantial;
 
 	RULE 3 :IF occurance IS perennial 	
-		AND depth IS chasmic 
+		AND depth IS chasmic
 		THEN relevance IS borderline;
 
 	RULE 4 :IF occurance IS periodic 	
 		AND depth IS superficial
 		OR depth IS shallow
+		AND parent IS alpha
 		THEN relevance IS borderline;
 
 	RULE 5 :IF occurance IS periodic 	
-		AND depth IS chasmic
+		AND depth IS superficial
+		OR depth IS shallow
+		AND parent IS beta
 		THEN relevance IS insubstantial;
 
-	RULE 6 :IF occurance IS sporadic 
+	RULE 6 :IF occurance IS periodic 	
+		AND depth IS chasmic
+		AND parent IS alpha
+		THEN relevance IS insubstantial;
+
+	RULE 7 :IF occurance IS periodic 	
+		AND depth IS chasmic
+		AND parent IS beta
+		THEN relevance IS nonexistant;
+
+	RULE 8 :IF occurance IS sporadic 
 		THEN relevance IS nonexistant;
 END_RULEBLOCK
 

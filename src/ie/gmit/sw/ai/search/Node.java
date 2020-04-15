@@ -4,13 +4,23 @@ package ie.gmit.sw.ai.search;
 public final class Node implements Comparable<Node> {
 	public boolean isTraversed = false; // For beam
 	private String url;
+	private Node parent;
 	private double score;
 	private int depth;
 
+	/* For initial node */
 	public Node(String url, int depth) {
 		super();
 		this.url = url;
 		this.depth = depth;
+	}
+
+	/* For every other child */
+	public Node(String url, Node parent, int depth) {
+		super();
+		this.url = url;
+		this.depth = depth;
+		this.parent = parent;
 	}
 
 	public int getDepth() {
@@ -39,6 +49,14 @@ public final class Node implements Comparable<Node> {
 
 	public boolean isTraversed() {
 		return isTraversed;
+	}
+
+	public Node getParent() {
+		return parent;
+	}
+
+	public void setParent(Node parent) {
+		this.parent = parent;
 	}
 
 	@Override

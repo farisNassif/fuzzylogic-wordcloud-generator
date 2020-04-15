@@ -13,7 +13,7 @@ public class Run {
 		int wcloudSize = 20;
 
 		ExecutorService pool = Executors.newFixedThreadPool(5);
-		WordcloudProcessor wordcloudProcessor = new WordcloudProcessor(new Wordcloud("batman", wcloudSize), 2, 6, 5);
+		WordcloudProcessor wordcloudProcessor = new WordcloudProcessor(new Wordcloud("pizza", wcloudSize), 2, 3, 3);
 
 		CompletableFuture<WordFrequency[]> future = CompletableFuture.supplyAsync(() -> wordcloudProcessor.process(),
 				pool);
@@ -25,6 +25,5 @@ public class Run {
 		}
 
 		System.out.println(Categorize.getCategory());
-
 	}
 }

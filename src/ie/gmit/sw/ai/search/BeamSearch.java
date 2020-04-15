@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
@@ -18,6 +17,7 @@ import org.jsoup.select.Elements;
 import ie.gmit.sw.ai.categorical.Categorize;
 import ie.gmit.sw.ai.cloud.WeightedFont;
 import ie.gmit.sw.ai.cloud.WordFrequency;
+import ie.gmit.sw.ai.fuzzylogic.BeamFuzzy;
 import ie.gmit.sw.ai.fuzzylogic.BestFirstFuzzy;
 import ie.gmit.sw.ai.util.GetFrequency;
 import ie.gmit.sw.ai.util.IgnoreWords;
@@ -26,7 +26,7 @@ import ie.gmit.sw.ai.util.Stopwatch;
 
 /* Handles the internal processing of the wordcloud */
 public class BeamSearch extends Search {
-	private final double TIME_LIMIT = 4.0;
+	private final int TIME_LIMIT = 4;
 
 	private Wordcloud wordcloud;
 	private int branchingFactor;
@@ -36,7 +36,7 @@ public class BeamSearch extends Search {
 
 	/* Contains URL's that were already visited */
 	private Set<String> closed_list = new ConcurrentSkipListSet<>();
-	/* Prio queue, polled after each branch, sorted highest > lowest */
+	/* Prio LIFO queue, unlike BFS this is sorted highest < lowest */
 	private Queue<Node> queue = new PriorityQueue<>(Comparator.comparing(Node::getScore));
 	/* Maps each polled node's words to their frequencies */
 	private Map<String, Integer> word_freq = new ConcurrentHashMap<String, Integer>();
@@ -48,7 +48,7 @@ public class BeamSearch extends Search {
 	}
 
 	@Override
-	WordFrequency[] ExecuteSearch() {
+	public WordFrequency[] ExecuteSearch() {
 		stopwatch.start();
 
 		InitializeSearch();
@@ -56,7 +56,7 @@ public class BeamSearch extends Search {
 		stopwatch.stop();
 		System.out.println("Search finished in " + stopwatch.toString() + " seconds");
 
-		/* Before it returns with frequency array, categorize the query word */
+		/* Before returning with frequency array, categorize the query word */
 		Categorize.category((word_freq));
 
 		/* Generate freq table & sort word map highest > lowest & return it */
@@ -74,7 +74,6 @@ public class BeamSearch extends Search {
 		Node initial = new Node(queryUrl, 0);
 
 		GenerateChildNodes(initial);
-
 	}
 
 	/* Generate children from a parent node */
@@ -86,10 +85,10 @@ public class BeamSearch extends Search {
 		for (Element child : children) {
 			String link = child.attr("href");
 
-			if (!closed_list.contains(link) && link.contains("https://") && birthControl < branchingFactor) {
+			if (!closed_list.contains(link) && link.startsWith("https://") && birthControl < branchingFactor) {
 				birthControl++;
 				/* New child, one level deeper than parent */
-				Node childNode = new Node(link, parent.getDepth() + 1);
+				Node childNode = new Node(link, parent, parent.getDepth() + 1);
 
 				/* Dirty, but jsoup was giving me hastle */
 				try {
@@ -139,9 +138,11 @@ public class BeamSearch extends Search {
 		String paragraph = childDoc.select("p").text().replaceAll("[^a-zA-Z]+", " ").toLowerCase();
 
 		System.out.println(child.getUrl() + ": Heuristic Score => "
-				+ BestFirstFuzzy.UrlRelevance(child, title, headings, paragraph, wordcloud.getWord()) + " Depth: "
-				+ child.getDepth());
-		child.setScore(BestFirstFuzzy.UrlRelevance(child, title, headings, paragraph, wordcloud.getWord()));
+				+ BeamFuzzy.UrlRelevance(child, queue, title, headings, paragraph, wordcloud.getWord())
+				+ " Depth: " + child.getDepth());
+
+		/* Score the child using fuzzy logic and set the score */
+		child.setScore(BeamFuzzy.UrlRelevance(child, queue, title, headings, paragraph, wordcloud.getWord()));
 
 		/* Always make sure at least 2 nodes in the queue */
 		if (queue.size() < 2) {
@@ -181,20 +182,20 @@ public class BeamSearch extends Search {
 
 		/* For each word .. */
 		for (String word : words) {
-			/* If it's not worthless and irrelevant .. */
 			try {
+				/* If it's not worthless and irrelevant .. */
 				if ((word.length() > 2) && (!IgnoreWords.ignoreWords().contains(word))) {
-					/* If the word was already mapped */
+					/* And if the word was already mapped */
 					if (word_freq.containsKey(word)) {
 						/* If it was encountered before, increment */
 						word_freq.replace(word, word_freq.get(word), word_freq.get(word) + 1);
 					} else {
-						/* If this was the first time encountering it, put into map */
+						/* Otherwise this was the first time encountering it, put into map */
 						word_freq.put(word, 1);
 					}
 				}
 			} catch (IOException e) {
-				e.printStackTrace();
+
 			}
 		}
 	}
@@ -203,12 +204,11 @@ public class BeamSearch extends Search {
 	private Document ConnectNode(Node child_to_connect_to) {
 		Document doc = null;
 		try {
-			System.setProperty("javax.net.ssl.trustStore", "your_keystore.jks");
 			doc = Jsoup.connect(child_to_connect_to.getUrl()).userAgent(
 					"Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36")
-					.referrer("http://www.google.com").execute().parse();
+					.referrer("http://www.google.com").ignoreContentType(true).ignoreHttpErrors(true).execute().parse();
 		} catch (IOException e) {
-			e.printStackTrace();
+
 		}
 		return doc;
 	}
