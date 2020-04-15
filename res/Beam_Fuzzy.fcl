@@ -75,8 +75,8 @@ END_FUZZIFY
 */
 FUZZIFY depth	  	
 	TERM superficial := (1, 1) (2, 0.93) (2, 0);
-  	TERM shallow := (3, 0) (3, 0.85) (4, 0.73) (5, 0.61) (5, 0);
-  	TERM chasmic := (6, 0) (6, 0.48) (7, 0.36) (8, 0.25) (9, 0.13) (10, 0);	
+  	TERM shallow := (2.99, 0) (3, 0.85) (4, 0.73) (5, 0.61) (5, 0);
+  	TERM chasmic := (5.99, 0) (6, 0) (6, 0.48) (7, 0.36) (8, 0.25) (9, 0.13) (10, 0);	
 END_FUZZIFY
 
 /*
@@ -125,6 +125,8 @@ END_DEFUZZIFY
 *
 *  Rules have been written to cover every possible input and have been tested thoroughly to ensure a wide range of inputs produce output that reflect fairly.
 *  Initially had more rules but combined some with OR and removed a lot of irrelevant ones. Individual rules will be explained below.
+*
+*  [Image of Overall chart - https://i.imgur.com/ECP8b6p.png] 
 */
 
 RULEBLOCK No1

@@ -7,13 +7,13 @@ public class fuzzytest {
 	public static void main(String[] args) {
 
 		/* Get a handle on the fcl file */
-		FIS fis = FIS.load("res/Beam_Fuzzy.fcl", true);
+		FIS fis = FIS.load("res/BFS_Fuzzy.fcl", true);
 		FunctionBlock fb = fis.getFunctionBlock("urlrelevance");
 
 		/* Set fuzzy variables */
-		fis.setVariable("occurance", 9);
-		fis.setVariable("depth",8);
-		fis.setVariable("parent",1);
+		fis.setVariable("occurance", 5);
+		fis.setVariable("depth",2);
+	//	fis.setVariable("parent",2);
 
 		// Evaluate
 		fis.evaluate();
