@@ -14,7 +14,7 @@
 ## Contents
 * [Running the Program](#running-the-program)
 * [Assignment Overview](#assignment-overview)
-* [Assignment Implementation]('#assignment-implementation)
+* [Assignment Implementation](#assignment-implementation)
 
 ## Running the Program
 
