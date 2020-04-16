@@ -49,3 +49,16 @@ The project is driven using both a Recursive Beam Search & Recursive Best First 
   * This Beam Search implementation works by generating and scoring <i>(n)</i> nodes initially and keeping the best two nodes in a reversed priority queue, meaning unlike R-BFS, the lowest node will always be polled first. If a queue with two nodes with the values [95, 50] receives a new node with the value of [100], the smallest scoring node which will always be the last node placed in the queue is removed and discarded, the new queue is now [100, 95] giving it a LIFO structure. <br><br> Only the nodes on the queue used to generate children, if one of these nodes has a child with a score greater than that of the last node into the queue, offer it to the
 queue otherwise and check the new node for any children better. Like R-BFS, this search has its own unique [Fuzzy Inference System](https://github.com/farisNassif/FourthYear_Artificial-Intelligence/blob/master/res/Beam_Fuzzy.fcl). The recursive process is repeated until either a stop condition is encountered or both nodes in the queue have been polled and neither of their children have scored high enough to be placed into the queue. Like the Best First Search, a closed list is used to keep track of visited pages. <br><br> Beam search is a very strong search, but while it can be good it does have its drawbacks. Beam can potentially chuck away a very relevant node and return sub-optimal results, but could also be fortunate enough to identify and traverse a very promising path faster than Recursive Best First Search, even if it's not the absolute optimal path. When testing Beam and Best First Search with a timer the bigger the search space the bigger the time gap between the two searches. Beam works best with an unambiguous space. <br><br> If no stop conditions were implemented, the time for Beam to complete would completely depend on the accuracy of the heuristic, giving it a worst case time complexity of going straight to the bottom of the tree <i>O(bd)</i>. Since beam only stores <i>n</i> nodes at each level, the worst case space complexity is <i>O(bd)</i>. The linear memory consumption means beam can probe fairly deep into larger spaces and find solutions other searches may not reach.
 
+* Fuzzy Implementation 
+  
+<p align="center">
+ <b><u>Recursive Best First Search</u></b>
+  <img src = "https://i.imgur.com/OzO2HL9.png">
+   <b><i>For a detailed description of the Fuzzy Implementation please see the <a href="https://github.com/farisNassif/FourthYear_Artificial-Intelligence/blob/master/res/BFS_Fuzzy.fcl">fuzzy file</a></i></b>
+</p>
+
+<p align="center">
+ <b><u>Beam Search</u></b>
+  <img src = "https://i.imgur.com/ECP8b6p.png">
+   <b><i>For a detailed description of the Fuzzy Implementation please see the <a href="https://github.com/farisNassif/FourthYear_Artificial-Intelligence/blob/master/res/Beam_Fuzzy.fcl">fuzzy file</a></i></b>
+</p>
