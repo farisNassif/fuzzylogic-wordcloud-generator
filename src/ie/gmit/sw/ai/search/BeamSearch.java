@@ -18,7 +18,6 @@ import ie.gmit.sw.ai.categorical.Categorize;
 import ie.gmit.sw.ai.cloud.WeightedFont;
 import ie.gmit.sw.ai.cloud.WordFrequency;
 import ie.gmit.sw.ai.fuzzylogic.BeamFuzzy;
-import ie.gmit.sw.ai.fuzzylogic.BestFirstFuzzy;
 import ie.gmit.sw.ai.util.GetFrequency;
 import ie.gmit.sw.ai.util.IgnoreWords;
 import ie.gmit.sw.ai.util.MapSort;
@@ -26,8 +25,6 @@ import ie.gmit.sw.ai.util.Stopwatch;
 
 /* Handles the internal processing of the wordcloud */
 public class BeamSearch extends Search {
-	private final int TIME_LIMIT = 4;
-
 	private Wordcloud wordcloud;
 	private int branchingFactor;
 	private int maxDepth;
@@ -49,12 +46,8 @@ public class BeamSearch extends Search {
 
 	@Override
 	public WordFrequency[] ExecuteSearch() {
-		stopwatch.start();
-
+		/* Kick off */
 		InitializeSearch();
-
-		stopwatch.stop();
-		System.out.println("Search finished in " + stopwatch.toString() + " seconds");
 
 		/* Before returning with frequency array, categorize the query word */
 		Categorize.category((word_freq));
@@ -114,7 +107,6 @@ public class BeamSearch extends Search {
 			}
 		}
 
-		/* This'll only ever execute when search has ran its course */
 		/* Will execute twice, one for each node in the queue */
 		for (Node node : queue) {
 			MapWords(node);
@@ -136,10 +128,6 @@ public class BeamSearch extends Search {
 
 		/* Get Paragraph data without numbers and symbols */
 		String paragraph = childDoc.select("p").text().replaceAll("[^a-zA-Z]+", " ").toLowerCase();
-
-		System.out.println(child.getUrl() + ": Heuristic Score => "
-				+ BeamFuzzy.UrlRelevance(child, queue, title, headings, paragraph, wordcloud.getWord()) + " Depth: "
-				+ child.getDepth());
 
 		/* Score the child using fuzzy logic and set the score */
 		child.setScore(BeamFuzzy.UrlRelevance(child, queue, title, headings, paragraph, wordcloud.getWord()));

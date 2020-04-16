@@ -1,5 +1,6 @@
 package ie.gmit.sw.ai.fuzzylogic;
 
+import ie.gmit.sw.ServiceHandler;
 import ie.gmit.sw.ai.search.Node;
 import net.sourceforge.jFuzzyLogic.FIS;
 import net.sourceforge.jFuzzyLogic.FunctionBlock;
@@ -9,11 +10,12 @@ public class BestFirstFuzzy {
 	/* Scores the url based on how relevant it is */
 	public static double UrlRelevance(Node child, String titleData, String headingsData, String paragraphData,
 			String query) {
-		double occuranceScore = 0;
 		final int URL_WEIGHT = 150;
 		final int TITLE_WEIGHT = 85;
 		final int HEADING_WEIGHT = 45;
 		final int PARAGRAPH_WEIGHT = 10;
+
+		double occuranceScore = 0;
 
 		int depth = 0;
 

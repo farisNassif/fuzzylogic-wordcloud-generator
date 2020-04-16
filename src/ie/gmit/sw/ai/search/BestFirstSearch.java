@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
@@ -25,7 +24,6 @@ import ie.gmit.sw.ai.fuzzylogic.BestFirstFuzzy;
 import ie.gmit.sw.ai.util.GetFrequency;
 import ie.gmit.sw.ai.util.IgnoreWords;
 import ie.gmit.sw.ai.util.MapSort;
-import ie.gmit.sw.ai.util.Stopwatch;
 
 /* Handles the internal processing of the wordcloud */
 public class BestFirstSearch extends Search {
@@ -49,18 +47,10 @@ public class BestFirstSearch extends Search {
 
 	@Override
 	public WordFrequency[] ExecuteSearch() {
-		Stopwatch stopwatch = new Stopwatch();
-
 		/* Start processing */
-		/* Start stopwatch */
-		stopwatch.start();
-		System.out.println("Processing -- Stopwatch started ..");
+
 		/* Begin BFS */
 		InitializeSearch();
-
-		/* Stop stopwatch, search has concluded */
-		stopwatch.stop();
-		System.out.println("Search finished in " + stopwatch.toString() + " seconds");
 
 		/* Before returning with frequency array, categorize the query word */
 		Categorize.category((word_freq));
@@ -131,11 +121,10 @@ public class BestFirstSearch extends Search {
 		/* Get Paragraph data without numbers and symbols */
 		String paragraph = childDoc.select("p").text().replaceAll("[^a-zA-Z]+", " ").toLowerCase();
 
-		System.out.println(child.getUrl() + ": Heuristic Score => "
-				+ BestFirstFuzzy.UrlRelevance(child, title, headings, paragraph, wordcloud.getWord()) + " Depth: "
-				+ child.getDepth());
+		/* Set child score */
 		child.setScore(BestFirstFuzzy.UrlRelevance(child, title, headings, paragraph, wordcloud.getWord()));
 
+		/* Offer to queue */
 		queue.offer(child);
 	}
 

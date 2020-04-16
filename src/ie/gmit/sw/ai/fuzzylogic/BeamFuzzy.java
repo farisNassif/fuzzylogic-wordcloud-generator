@@ -2,6 +2,7 @@ package ie.gmit.sw.ai.fuzzylogic;
 
 import java.util.Queue;
 
+import ie.gmit.sw.ServiceHandler;
 import ie.gmit.sw.ai.search.Node;
 import net.sourceforge.jFuzzyLogic.FIS;
 import net.sourceforge.jFuzzyLogic.FunctionBlock;
@@ -65,6 +66,7 @@ public class BeamFuzzy {
 		}
 
 		/* Get a handle on the fcl file */
+		//FIS fis = FIS.load(ServiceHandler.FuzzyBeamFcl.getAbsolutePath(), true);
 		FIS fis = FIS.load("res/Beam_Fuzzy.fcl", true);
 		FunctionBlock fb = fis.getFunctionBlock("urlrelevance");
 
