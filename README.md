@@ -5,7 +5,7 @@
 |Details  |    |
 | --- | --- |
 | **Assignment**  | [Assignment Spec](https://learnonline.gmit.ie/pluginfile.php/176531/mod_resource/content/2/aiAssignment2020.pdf) 
-| **GIF** | [TODO](https://github.com/farisNassif/FourthYear_Artificial-Intelligence)
+| **Hosted Webapp** | [Heroku Deployment](https://faris-gmit-ai-2020.herokuapp.com/)
 | **Course** | BSc (Hons) in Software Development
 | **Module** |  Artificial Intelligence |
 | **Author** | [Faris Nassif](https://github.com/farisNassif) |
