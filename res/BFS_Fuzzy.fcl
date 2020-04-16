@@ -118,21 +118,21 @@ RULEBLOCK No1
 		THEN relevance IS substantial;
 	/*
 	*  Seconnd best case, query word is frequently occuring 
-	*  and the child is at level 2
+	*  and the child is at level 2.
 	*/
 	RULE 2 :IF occurance IS perennial 	
 		AND depth IS shallow
 		THEN relevance IS substantial;
 
 	/*
-	*  Query word is frequently occuring but the child is at level 3
+	*  Query word is frequently occuring but the child is at level 3.
 	*/
 	RULE 3 :IF occurance IS perennial 	
 		AND depth IS chasmic 
 		THEN relevance IS borderline;
 
 	/*
-	*  Query word is sometimes occuring with a depth of 1 or 2
+	*  Query word is sometimes occuring with a depth of 1 or 2.
 	*/
 	RULE 4 :IF occurance IS periodic 	
 		AND depth IS superficial
@@ -140,7 +140,7 @@ RULEBLOCK No1
 		THEN relevance IS borderline;
 
 	/*
-	*  Query word is sometimes occuring and the child is at level 3
+	*  Query word is sometimes occuring and the child is at level 3.
 	*/
 	RULE 5 :IF occurance IS periodic 	
 		AND depth IS chasmic
