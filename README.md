@@ -26,15 +26,10 @@
 * [Encog Core 3.4](https://github.com/jeffheaton/encog-java-core)
 
 ### How to Run
-* Clone the repository
-  * `git clone https://github.com/farisNassif/FourthYear_Artificial-Intelligence`
-* Navigate to the [Executeables](https://github.com/farisNassif) folder
-  * `cd FourthYear_Artificial-Intelligence/Executeables`
-* Execute the program via the .jar
-  * `TODO -> Jar thing`
-  
+* Project .jar files were not generated considering the project .war file is compiled and built via [Tomcat](http://tomcat.apache.org/). For information on how to compile and deploy the .war archive see [How to Deploy a WAR file to Tomcat](https://www.baeldung.com/tomcat-deploy-war)
+
 ### Alternatively
-* The Program may be accessed via [Heroku](https://faris-gmit-ai-2020.herokuapp.com/)
+* The Program may be accessed via [Heroku](https://faris-gmit-ai-2020.herokuapp.com/). (<i>May take a couple of seconds to load initially, application is set to sleep</i>)
 
 ## Assignment Overview
 The goal of the assignment is to develop a multithreaded AI search application that can generate a word cloud from the top (n) words associated with an internet search term. 
