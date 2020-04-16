@@ -1,7 +1,6 @@
 package ie.gmit.sw.ai.util;
 
 import java.util.Map;
-
 import java.util.Map.Entry;
 
 import ie.gmit.sw.ai.cloud.WordFrequency;

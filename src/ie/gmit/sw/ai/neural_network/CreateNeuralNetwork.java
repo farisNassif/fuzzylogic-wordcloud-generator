@@ -15,10 +15,10 @@ import org.encog.persist.EncogDirectoryPersistence;
 public class CreateNeuralNetwork {
 
 	/*
-	 * public static void main(String[] args) throws Exception { new
-	 * CreateNeuralNetwork().createNN(); }
-	 */
-
+	public static void main(String[] args) throws Exception {
+		new CreateNeuralNetwork().createNN();
+	}
+	*/
 	@SuppressWarnings("unused")
 	private void createNN() throws Exception {
 		String filename = "res/NeuralNetwork";
@@ -26,11 +26,11 @@ public class CreateNeuralNetwork {
 		double[] result = { 0, 0, 0, 0, 0, 0, 0, 0 };
 
 		BasicNetwork network = new BasicNetwork();
-		/* 8 Categories */
+		/* Input layer, 8 nodes, one for each category */
 		network.addLayer(new BasicLayer(null, true, 8));
-		/* 32 hidden layers, felt to give the most consistent NN without starvation */
+		/* Single hidden layer, 32 nodes, felt to give the most consistent NN without starvation */
 		network.addLayer(new BasicLayer(new ActivationSigmoid(), true, 32));
-		/* 8 output layers, 1 for each category */
+		/* Output layer, 1 for each category */
 		network.addLayer(new BasicLayer(new ActivationSigmoid(), false, 8));
 		network.getStructure().finalizeStructure();
 		network.reset();
@@ -40,6 +40,7 @@ public class CreateNeuralNetwork {
 
 		/* First-order optimization algorithm, supervised learning in feedforward ANN's */
 		ResilientPropagation train = new ResilientPropagation(network, trainingSet);
+		
 		/* Min error .000000000001 for the craic */
 		double minError = 0.000000000001;
 		int epoch = 1;
@@ -51,9 +52,11 @@ public class CreateNeuralNetwork {
 		} while (train.getError() > minError);
 		train.finishTraining();
 
+		/*
 		System.out.println("Training Done in " + epoch + " epochs with error " + train.getError());
 		network.compute(test, result);
-
+		 */
+		
 		double biggest = 0;
 		int highest = 0;
 		for (int i = 0; i < 8; i++) {
@@ -63,7 +66,8 @@ public class CreateNeuralNetwork {
 				highest = i;
 			}
 		}
-		System.out.println(highest);
+		
+		// System.out.println(highest);
 
 		/* Finish training the NN */
 		train.finishTraining();

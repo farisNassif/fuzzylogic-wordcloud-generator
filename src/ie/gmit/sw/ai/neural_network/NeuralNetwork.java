@@ -21,17 +21,17 @@ public class NeuralNetwork {
 
 		/* Used to go through array and find best index */
 		double biggest = 0;
-		int highest = 0;
+		int highestIndex = 0;
 
 		/* Theres better ways to do this, gets best index */
 		for (int i = 0; i < 8; i++) {
 			if (result[i] > biggest) {
 				biggest = result[i];
-				highest = i;
+				highestIndex = i;
 			}
 		}
 
 		/* Return the best index, each index indicating a category */
-		return highest;
+		return highestIndex;
 	}
 }

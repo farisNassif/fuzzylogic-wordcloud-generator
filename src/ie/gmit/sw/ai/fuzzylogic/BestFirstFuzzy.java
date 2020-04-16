@@ -10,16 +10,17 @@ public class BestFirstFuzzy {
 	/* Scores the url based on how relevant it is */
 	public static double UrlRelevance(Node child, String titleData, String headingsData, String paragraphData,
 			String query) {
+
+		/* Same weightings as other Fuzzy file, worked well so didn't change them */
 		final int URL_WEIGHT = 150;
 		final int TITLE_WEIGHT = 85;
 		final int HEADING_WEIGHT = 45;
 		final int PARAGRAPH_WEIGHT = 10;
 
 		double occuranceScore = 0;
-
 		int depth = 0;
 
-		/* For BFS, anything with a depth over 3 is abyssmal */
+		/* For BFS, anything with a depth over 3 is abyssmal so 3 is max */
 		if (child.getDepth() > 3) {
 			depth = 3;
 		} else {
@@ -58,7 +59,8 @@ public class BestFirstFuzzy {
 		}
 
 		/* Get a handle on the fcl file */
-		FIS fis = FIS.load("res/BFS_Fuzzy.fcl", true);
+		FIS fis = FIS.load(ServiceHandler.FuzzyBFSFcl.getAbsolutePath(), true);
+		// FIS fis = FIS.load("res/BFS_Fuzzy.fcl", true);
 		FunctionBlock fb = fis.getFunctionBlock("urlrelevance");
 
 		/* Set fuzzy variables */

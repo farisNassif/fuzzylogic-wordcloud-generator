@@ -13,6 +13,7 @@ public class BeamFuzzy {
 	public static double UrlRelevance(Node child, Queue<Node> queue, String titleData, String headingsData,
 			String paragraphData, String query) {
 
+		/* Same weightings as other Fuzzy file, worked well so didn't change them */
 		final int URL_WEIGHT = 150;
 		final int TITLE_WEIGHT = 85;
 		final int HEADING_WEIGHT = 45;
@@ -66,8 +67,8 @@ public class BeamFuzzy {
 		}
 
 		/* Get a handle on the fcl file */
-		//FIS fis = FIS.load(ServiceHandler.FuzzyBeamFcl.getAbsolutePath(), true);
-		FIS fis = FIS.load("res/Beam_Fuzzy.fcl", true);
+		FIS fis = FIS.load(ServiceHandler.FuzzyBeamFcl.getAbsolutePath(), true);
+		// FIS fis = FIS.load("res/Beam_Fuzzy.fcl", true);
 		FunctionBlock fb = fis.getFunctionBlock("urlrelevance");
 
 		/* Set fuzzy variables */

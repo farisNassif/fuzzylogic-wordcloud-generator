@@ -19,8 +19,8 @@ public class LoadNeuralNetwork {
 		// String filename = "res/NeuralNetwork";
 
 		BasicNetwork loadFromFileNetwork = (BasicNetwork) EncogDirectoryPersistence
-				//.loadObject(new File(ServiceHandler.NeuralNetwork.getAbsolutePath()));
-				.loadObject(new File("res/NeuralNetwork"));
+				.loadObject(new File(ServiceHandler.NeuralNetwork.getAbsolutePath()));
+				//.loadObject(new File("res/NeuralNetwork"));
 		return loadFromFileNetwork;
 	}
 }

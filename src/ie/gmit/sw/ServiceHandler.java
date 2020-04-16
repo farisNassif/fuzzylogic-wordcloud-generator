@@ -23,11 +23,12 @@ import ie.gmit.sw.ai.util.Stopwatch;
 
 public class ServiceHandler extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	public static File IgnoreWords;
+	
+	/* Files */
+	public static File IgnoreWords;	
 	public static File FuzzyBFSFcl;
 	public static File FuzzyBeamFcl;
 	public static File NeuralNetwork;
-
 	private String Ignore = null;
 	private String FuzzyBFS = null;
 	private String FuzzyBeam = null;
@@ -42,6 +43,7 @@ public class ServiceHandler extends HttpServlet {
 		FuzzyBeam = getServletContext().getRealPath(File.separator) + ctx.getInitParameter("BEAM_FUZZY_FILE_LOCATION");
 		NN = getServletContext().getRealPath(File.separator) + ctx.getInitParameter("NEURAL_NETWORK_LOCATION");
 
+		/* File path assignment */
 		FuzzyBFSFcl = new File(FuzzyBFS);
 		IgnoreWords = new File(Ignore);
 		FuzzyBeamFcl = new File(FuzzyBeam);
@@ -60,7 +62,7 @@ public class ServiceHandler extends HttpServlet {
 		String searchOption = req.getParameter("searchType");
 		String query = req.getParameter("query");
 		/* Just converting from string to int to get value can work with */
-		int maxWords = Integer.valueOf(req.getParameter("maxWords"));
+		int maxWords = Integer.valueOf(req.getParameter("maxWords").substring(0, 2));
 		int branchingFactor = Integer.valueOf(
 				req.getParameter("branchingFactor").substring(req.getParameter("branchingFactor").length() - 1));
 		int maxDepth = Integer
@@ -73,20 +75,8 @@ public class ServiceHandler extends HttpServlet {
 		out.print("</head>");
 		out.print("<body>");
 		out.print(
-				"<div style=\"font-size:48pt; font-family:arial; color:#990000; font-weight:bold\">Wordcloud Generator</div>");
+				"<div style=\"font-size:48pt; font-family:arial; color:#990000; font-weight:bold\">Heuristically Informed Wordcloud Generator</div>");
 
-		out.print(
-				"<p>The &quot;ignore words&quot; file is located at <font color=red><b>" + IgnoreWords.getAbsolutePath()
-						+ "</b></font> and is <b><u>" + IgnoreWords.length() + "</u></b> bytes in size.");
-
-		out.print("<p>The &quot;fuzzy&quot; file is located at <font color=red><b>" + FuzzyBFSFcl.getAbsolutePath()
-				+ "</b></font> and is <b><u>" + FuzzyBFSFcl.length() + "</u></b> bytes in size.");
-
-		out.print("<p>The &quot;fuzzy&quot; file is located at <font color=red><b>" + FuzzyBeamFcl.getAbsolutePath()
-				+ "</b></font> and is <b><u>" + FuzzyBeamFcl.length() + "</u></b> bytes in size.");
-
-		out.print("<p>The &quot;fuzzy&quot; file is located at <font color=red><b>" + NeuralNetwork.getAbsolutePath()
-				+ "</b></font> and is <b><u>" + NeuralNetwork.length() + "</u></b> bytes in size.");
 
 		out.print("<p><fieldset><legend><h3>Result</h3></legend>");
 
@@ -135,7 +125,8 @@ public class ServiceHandler extends HttpServlet {
 		out.print("<p>Wordcloud generated from query '<b>" + query
 				+ "</b>'. The neural network attempted to categorize your query as '<b>" + Categorize.getCategory()
 				+ "</b>'</p>");
-		out.print("<p>A <b>" + searchOption + "</b> was performed and generated your wordcloud in <b>" + stopwatch.toString() + "</b>'</p>");
+		out.print("<p>A <b>" + searchOption + "</b> with a branching factor of <b>" + branchingFactor + "</b> and depth of <b>" + maxDepth + "</b>  was performed and generated your wordcloud in <b>" + stopwatch.toString() + "</b></p>");
+		out.print("<p>URL's scored and visited: <b>" + (((int)Math.pow(branchingFactor, maxDepth)) + 1) + "</b>. <u><b>Note</u>:</b><i> This value isn't always 100% accurate, it's the amount of nodes that should be visited, the search may terminate if a stop condition is triggered</i>.</p>");
 		out.print("<a href=\"./\">Return to Start Page</a>");
 		out.print("</body>");
 		out.print("</html>");

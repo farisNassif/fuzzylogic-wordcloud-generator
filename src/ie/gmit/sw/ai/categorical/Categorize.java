@@ -5,7 +5,7 @@ import java.util.Map;
 import ie.gmit.sw.ai.neural_network.NeuralNetwork;
 import ie.gmit.sw.ai.util.MapSort;
 
-/* After a search has concluded, get the word/frequency mapping and 
+/* After a search has concluded, get the word / frequency mapping and 
  * try and categorize the query word based on the association of 
  * returned words */
 public class Categorize {

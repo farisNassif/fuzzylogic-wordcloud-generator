@@ -8,18 +8,20 @@ import java.util.concurrent.Executors;
 import ie.gmit.sw.ai.categorical.Categorize;
 import ie.gmit.sw.ai.cloud.WordFrequency;
 
+/**
+ * @deprecated: Old test runner before service handler was implemented
+ */
 public class Run {
+	
 	public static void main(String[] args) throws InterruptedException, ExecutionException {
 		int wcloudSize = 20;
-		System.out.println((int)Math.pow(5, 5));
 		ExecutorService pool = Executors.newFixedThreadPool(5);
-		WordcloudProcessor wordcloudProcessor = new WordcloudProcessor(new Wordcloud("software", wcloudSize), 2,2, 3);
+		WordcloudProcessor wordcloudProcessor = new WordcloudProcessor(new Wordcloud("software", wcloudSize), 2, 2, 3);
 
 		CompletableFuture<WordFrequency[]> future = CompletableFuture.supplyAsync(() -> wordcloudProcessor.process(),
 				pool);
 
 		// future.get();
-
 
 		for (WordFrequency word : future.get()) {
 			System.out.println(word);

@@ -7,7 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/* Sort maps => highest to lowest value */
+/* Sort (mainly frequency) maps => highest to lowest value */
 public class MapSort {
 	public static <K, V extends Comparable<? super V>> Map<K, V> crunchifySortMap(final Map<K, V> mapToSort) {
 		List<Map.Entry<K, V>> entries = Collections.synchronizedList(new ArrayList<Map.Entry<K, V>>(mapToSort.size()));

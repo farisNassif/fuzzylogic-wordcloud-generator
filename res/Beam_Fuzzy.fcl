@@ -143,9 +143,8 @@ RULEBLOCK No1
 		THEN relevance IS substantial;
 
 	/* 
-	*  Both results 2, 3 & 4 are very good outcomes, using the parental variable
+	* Both results 2, 3 & 4 are very good outcomes, using the parental variable
 	* to distinguish between 3 and 4
-	*  
  	*/ 
 	RULE 2: IF occurance IS periodic 	
 		AND depth IS superficial

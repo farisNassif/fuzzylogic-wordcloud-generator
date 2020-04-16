@@ -2,7 +2,6 @@ package ie.gmit.sw.ai.cloud;
 
 import java.awt.Rectangle;
 import java.util.List;
-
 public class CollisionDetector {
 	/*
 	 * Checks if the rectangle created around the new word overlaps any of the existing

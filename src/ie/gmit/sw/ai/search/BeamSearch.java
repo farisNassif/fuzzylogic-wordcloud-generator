@@ -15,9 +15,12 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import ie.gmit.sw.ai.categorical.Categorize;
+
 import ie.gmit.sw.ai.cloud.WeightedFont;
 import ie.gmit.sw.ai.cloud.WordFrequency;
+
 import ie.gmit.sw.ai.fuzzylogic.BeamFuzzy;
+
 import ie.gmit.sw.ai.util.GetFrequency;
 import ie.gmit.sw.ai.util.IgnoreWords;
 import ie.gmit.sw.ai.util.MapSort;
@@ -95,6 +98,7 @@ public class BeamSearch extends Search {
 			}
 		}
 
+		/* At this point two best children will be in the queue */
 		if (closed_list.size() < (branchingFactor * maxDepth + 1)) {
 			/* For each node currently in the queue (Max 2) */
 			for (Node node : queue) {

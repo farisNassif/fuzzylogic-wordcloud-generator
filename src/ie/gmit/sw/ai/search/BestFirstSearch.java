@@ -56,8 +56,7 @@ public class BestFirstSearch extends Search {
 		Categorize.category((word_freq));
 
 		/* Generate freq table & sort word map highest > lowest & return it */
-		return new WeightedFont()
-				.getFontSizes(GetFrequency.GenerateFrequency(MapSort.crunchifySortMap(word_freq), wordcloud));
+		return new WeightedFont().getFontSizes(GetFrequency.GenerateFrequency(MapSort.crunchifySortMap(word_freq), wordcloud));
 	}
 
 	/* Kicks off the search */
@@ -81,7 +80,7 @@ public class BestFirstSearch extends Search {
 		for (Element child : children) {
 			String link = child.attr("href");
 
-			if (!closed_list.contains(link) && link.contains("https://") && count < branchingFactor) {
+			if (!closed_list.contains(link) && link.startsWith("https://") && count < branchingFactor) {
 				count++;
 				/* New child, one level deeper than parent */
 				Node childNode = new Node(link, parent.getDepth() + 1);
@@ -98,10 +97,13 @@ public class BestFirstSearch extends Search {
 			}
 		}
 
+		/* Map words to frequencies for best child */
+		MapWords(queue.peek());
+
+		/* This code block decides if more children should be generated */
 		/* Poll the queue, generate more children from the best child */
-		if (closed_list.size() < (branchingFactor * maxDepth + 1) && queue.peek().getDepth() < maxDepth) {
-			/* Map words to frequencies for best child */
-			MapWords(queue.peek());
+		if (closed_list.size() < (branchingFactor * maxDepth + 1) && queue.peek().getDepth() < maxDepth
+				&& queue.peek().getScore() != 0) {
 			/* Remove from queue and go generate more children from the best child node */
 			GenerateChildNodes(queue.poll());
 		}
