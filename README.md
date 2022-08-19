@@ -21,14 +21,14 @@
 ### Alternatively
 * The Program may be accessed via [Heroku](https://faris-gmit-ai-2020.herokuapp.com/). (<i>May take a couple of seconds to load initially, application is set to sleep</i>)
 
-## Assignment Overview
-The goal of the assignment is to develop a multithreaded AI search application that can generate a word cloud from the top (n) words associated with an internet search term. 
+## Overview
+The goal of the project is to develop a multithreaded AI search application that can generate a word cloud from the top (n) words associated with an internet search term. 
 
 The program takes a <b>Query Word</b> from the user and using [Jsoup](https://jsoup.org/), returns the top resulting web-pages associated with that word. Jsoup then scrapes the content of those pages and heuristically scores the page content using multiple scoring functions and [JFuzzyLogic](http://jfuzzylogic.sourceforge.net/html/index.html) allowing for smart scoring and word-frequency matching. The content contained within the top heuristically scoring pages is then processed and mapped to it's frequency of occurrence.
 
 The result of the frequency matching consists of the top (n) words associated with the user's query. The resulting top words then get returned to the user in image form, with the most frequent being the largest and the lesser words scaled representing their frequency in a spiral formation.
 
-## Assignment Implementation
+## Implementation
 The project is driven using both a Recursive Beam Search & Recursive Best First Search, both searches being implemented as greedy searches meaning they are driven solely on nodal heuristic value.
 
 * <b>Best First Search</b>
