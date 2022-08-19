@@ -1,16 +1,5 @@
 <h3 align="center">A multithreaded Tomcat web-app multiple heuristically informed searches that generates a word cloud from the top (n) words associated with a chosen search term and categorizes the search term using a Neural Network</h3>
 
-## Assignment Details
-
-|Details  |    |
-| --- | --- |
-| **Assignment**  | [Assignment Spec](https://learnonline.gmit.ie/pluginfile.php/176531/mod_resource/content/2/aiAssignment2020.pdf) 
-| **Hosted Webapp** | [Heroku Deployment](https://faris-gmit-ai-2020.herokuapp.com/)
-| **Course** | BSc (Hons) in Software Development
-| **Module** |  Artificial Intelligence |
-| **Author** | [Faris Nassif](https://github.com/farisNassif) |
-| **Lecturer** | Dr John Healy |
-
 ## Contents
 * [Running the Program](#running-the-program)
 * [Assignment Overview](#assignment-overview)
